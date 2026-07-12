@@ -31,14 +31,23 @@ const RANKS=[
  {lv:6,name:'宇宙之光',need:500},
 ];
 
-// 能力（养成点）——每个正向加分项对应一种能力
+// 能力（养成点）——四个成长维度，颜色固定，名称/图标家长可自定义
 const ATTRS={
- courage:{name:'勇气',i:'⚡',c:'#3fb3a6'},
- wisdom:{name:'智慧',i:'🧠',c:'#77a8cf'},
- body:{name:'体魄',i:'💪',c:'#d0ac54'},
- heart:{name:'爱心',i:'❤️',c:'#d98aa0'},
+ courage:{c:'#3fb3a6'},
+ wisdom:{c:'#77a8cf'},
+ fitness:{c:'#d0ac54'},
+ social:{c:'#d98aa0'},
 };
-const ATTR_ORDER=['courage','wisdom','body','heart'];
+const ATTR_ORDER=['courage','wisdom','fitness','social'];
+const DEFAULT_ATTRS_META={
+ courage:{name:'勇气',i:'⚡'},
+ wisdom:{name:'智慧',i:'🧠'},
+ fitness:{name:'体能',i:'🏃'},
+ social:{name:'社交',i:'🤝'},
+};
+function attrMeta(k){return (S.cfg&&S.cfg.attrs&&S.cfg.attrs[k])||DEFAULT_ATTRS_META[k];}
+function attrName(k){return attrMeta(k).name;}
+function attrIcon(k){return attrMeta(k).i;}
 
 const DEFAULT_RWS=[
  {id:'sk',i:'🍦',n:'选一个零食',c:15,lv:1,h:'#f3ece0'},
@@ -54,38 +63,38 @@ const DEFAULT_RWS=[
 ];
 const DEFAULT_TASKS=[
  {i:'📚',label:'认真听课',p:3,attr:'wisdom'},
- {i:'🖍️',label:'完成手工',p:5,attr:'wisdom'},
- {i:'🤝',label:'友好相处',p:3,attr:'heart'},
- {i:'🎨',label:'认真画画',p:3,attr:'wisdom'},
+ {i:'🏃',label:'户外运动',p:4,attr:'fitness'},
+ {i:'🤝',label:'和小朋友合作',p:3,attr:'social'},
+ {i:'🙋',label:'勇敢举手',p:3,attr:'courage'},
 ];
 const DEFAULT_QADD=[
- {i:'🍚',label:'乖乖吃饭',p:3,attr:'body'},
- {i:'😴',label:'早睡早起',p:5,attr:'body'},
- {i:'🧹',label:'帮做家务',p:5,attr:'heart'},
- {i:'🧸',label:'分享玩具',p:4,attr:'heart'},
- {i:'🦷',label:'认真刷牙',p:2,attr:'body'},
+ {i:'🍚',label:'乖乖吃饭',p:3,attr:'fitness'},
+ {i:'😴',label:'早睡早起',p:4,attr:'fitness'},
+ {i:'🧹',label:'帮做家务',p:5,attr:'social'},
+ {i:'🧸',label:'分享玩具',p:4,attr:'social'},
  {i:'💪',label:'勇敢尝试',p:4,attr:'courage'},
+ {i:'📖',label:'主动阅读',p:4,attr:'wisdom'},
 ];
 const DEFAULT_QSUB=[
  {i:'🥊',label:'打架斗殴',p:5},
  {i:'🤥',label:'撒谎骗人',p:4},
 ];
-// 不同教育阶段的快捷加分预设
+// 不同教育阶段的快捷加分预设（覆盖四个维度）
 const QADD_PRESETS={
- '幼儿·生活习惯':[
-  {i:'🍚',label:'乖乖吃饭',p:3,attr:'body'},{i:'😴',label:'早睡早起',p:4,attr:'body'},
-  {i:'🦷',label:'认真刷牙',p:2,attr:'body'},{i:'👕',label:'自己穿衣',p:3,attr:'body'},
-  {i:'🧸',label:'收拾玩具',p:3,attr:'heart'},{i:'🚽',label:'自己如厕',p:2,attr:'body'},
+ '幼儿·生活自理':[
+  {i:'🍚',label:'乖乖吃饭',p:3,attr:'fitness'},{i:'😴',label:'早睡早起',p:4,attr:'fitness'},
+  {i:'🦷',label:'认真刷牙',p:2,attr:'fitness'},{i:'👕',label:'自己穿衣',p:3,attr:'courage'},
+  {i:'🧸',label:'收拾玩具',p:3,attr:'social'},{i:'🚽',label:'自己如厕',p:2,attr:'courage'},
  ],
- '幼儿·情感社交':[
-  {i:'🤝',label:'友好相处',p:3,attr:'heart'},{i:'🧸',label:'分享玩具',p:4,attr:'heart'},
-  {i:'😊',label:'好好说话',p:3,attr:'heart'},{i:'🫂',label:'安慰他人',p:4,attr:'heart'},
-  {i:'💪',label:'勇敢尝试',p:4,attr:'courage'},{i:'🙋',label:'主动打招呼',p:2,attr:'courage'},
+ '幼儿·勇敢社交':[
+  {i:'🙋',label:'主动打招呼',p:3,attr:'courage'},{i:'🤝',label:'和小朋友合作',p:3,attr:'social'},
+  {i:'🧸',label:'分享玩具',p:4,attr:'social'},{i:'🫂',label:'安慰他人',p:4,attr:'social'},
+  {i:'💪',label:'勇敢尝试',p:4,attr:'courage'},{i:'🗣️',label:'大胆表达',p:3,attr:'courage'},
  ],
- '学龄·学习成长':[
+ '学龄·学习探索':[
   {i:'📚',label:'认真听课',p:3,attr:'wisdom'},{i:'✏️',label:'完成作业',p:5,attr:'wisdom'},
   {i:'📖',label:'主动阅读',p:4,attr:'wisdom'},{i:'🎨',label:'认真画画',p:3,attr:'wisdom'},
-  {i:'🏃',label:'坚持运动',p:4,attr:'body'},{i:'🧹',label:'帮做家务',p:5,attr:'heart'},
+  {i:'🏃',label:'户外运动',p:4,attr:'fitness'},{i:'🧹',label:'帮做家务',p:5,attr:'social'},
  ],
 };
 const QSUB_PRESETS={
@@ -111,8 +120,16 @@ function ensureCfg(){
  if(!Array.isArray(S.cfg.qsub))S.cfg.qsub=cloneArr(DEFAULT_QSUB);
  DEFAULT_RWS.forEach(d=>{if(!S.cfg.rewards.find(r=>r.id===d.id))S.cfg.rewards.push({...d});});
  S.cfg.rewards.forEach(r=>{const d=DEFAULT_RWS.find(x=>x.id===r.id);if(d){r.i=d.i;r.h=d.h;}});
+ // 成长维度名称/图标（家长可自定义）
+ if(!S.cfg.attrs||typeof S.cfg.attrs!=='object')S.cfg.attrs=clone(DEFAULT_ATTRS_META);
+ ATTR_ORDER.forEach(k=>{if(!S.cfg.attrs[k])S.cfg.attrs[k]={...DEFAULT_ATTRS_META[k]};});
+ // 旧维度键迁移：体魄body→体能fitness，爱心heart→社交social
  if(!S.abilities||typeof S.abilities!=='object')S.abilities={};
+ if(S.abilities.body!==undefined){S.abilities.fitness=(S.abilities.fitness||0)+S.abilities.body;delete S.abilities.body;}
+ if(S.abilities.heart!==undefined){S.abilities.social=(S.abilities.social||0)+S.abilities.heart;delete S.abilities.heart;}
  ATTR_ORDER.forEach(k=>{if(typeof S.abilities[k]!=='number')S.abilities[k]=0;});
+ (S.hist||[]).forEach(h=>{if(h.attr==='body')h.attr='fitness';else if(h.attr==='heart')h.attr='social';});
+ [S.cfg.tasks,S.cfg.qadd].forEach(arr=>arr&&arr.forEach(x=>{if(x.attr==='body')x.attr='fitness';else if(x.attr==='heart')x.attr='social';}));
 }
 ensureCfg();
 function getRewards(){return S.cfg.rewards;}
@@ -145,20 +162,24 @@ function finish(){buildP();save();showMain();}
 function buildP(){const av=AVS.find(a=>a.id===sAv)||AVS[0];P={name:sName.trim()||'小英雄',avId:sCust?'':sAv,e:sCust,g:av.g,fid:null};}
 function bindGrid(id,sel,cb){const g=document.getElementById(id);if(!g)return;g.innerHTML=AVS.map((av,i)=>`<div class="av-opt${av.id===sel?' sel':''}" data-i="${i}">${charSvg(av.id,46)}<span class="av-lbl">${av.l}</span></div>`).join('');g.querySelectorAll('.av-opt').forEach(el=>el.addEventListener('click',()=>{g.querySelectorAll('.av-opt').forEach(e=>e.classList.remove('sel'));el.classList.add('sel');cb(AVS[el.dataset.i]);}));}
 
-function showMain(){document.getElementById('SW').style.display='none';document.getElementById('MW').style.display='';renderAll();startAuto();if(P&&P.fid)pullCloud();}
+function showMain(){document.getElementById('SW').style.display='none';document.getElementById('MW').style.display='';renderAll();startAuto();setupObserver();if(P&&P.fid)pullCloud();}
+let obsBound=false;
+function updateMiniBar(){const hdr=document.getElementById('hdr'),mb=document.getElementById('miniBar');if(!hdr||!mb)return;const b=hdr.getBoundingClientRect().bottom;mb.classList.toggle('show',b<40);}
+function setupObserver(){updateMiniBar();if(obsBound)return;obsBound=true;window.addEventListener('scroll',updateMiniBar,{passive:true});window.addEventListener('resize',updateMiniBar,{passive:true});}
 
 // ===== 渲染 =====
 function avInner(sz){return (P.avId&&CHARS[P.avId])?charSvg(P.avId,sz):`<span style="font-size:${Math.round(sz*0.55)}px">${esc(P.e)||'🦸'}</span>`;}
 function renderAll(){renderHdr();renderCi();renderTasks();renderAbilities();renderRw();renderHist();renderQuick();renderSync();renderInstall();renderSettings();}
 function renderHdr(){const hdr=document.getElementById('hdr');if(!hdr||!P)return;const rk=rankOf(S.lifetime);const av=document.getElementById('hav');av.innerHTML=avInner(80);av.style.boxShadow=`0 6px 16px rgba(0,0,0,.15),0 0 ${6+rk.lv*4}px rgba(255,240,190,${.15+rk.lv*.06})`;document.getElementById('hnm').textContent=(P.name||'小英雄');document.getElementById('hpts').textContent=S.points;
- const nx=nextRank(rk.lv);
+ const nx=nextRank(rk.lv);let pct=100;
  document.getElementById('rchip').textContent='LV.'+rk.lv+' '+rk.name;
- if(nx){const span=nx.need-rk.need,done=S.lifetime-rk.need,pct=Math.max(0,Math.min(100,Math.round(done/span*100)));document.getElementById('pfill').style.width=pct+'%';document.getElementById('ptxt').textContent=`再得 ${nx.need-S.lifetime} 颗 ⭐ 升到 LV.${nx.lv} ${nx.name}`;}
+ if(nx){const span=nx.need-rk.need,done=S.lifetime-rk.need;pct=Math.max(0,Math.min(100,Math.round(done/span*100)));document.getElementById('pfill').style.width=pct+'%';document.getElementById('ptxt').textContent=`再得 ${nx.need-S.lifetime} 颗 ⭐ 升到 LV.${nx.lv} ${nx.name}`;}
  else{document.getElementById('pfill').style.width='100%';document.getElementById('ptxt').textContent='🏆 已是最高等级！宇宙之光！';}
+ const mbAv=document.getElementById('mbAv');if(mbAv){mbAv.innerHTML=avInner(30);document.getElementById('mbLv').textContent='LV.'+rk.lv;document.getElementById('mpts').textContent=S.points;document.getElementById('mfill').style.width=pct+'%';}
 }
-function renderCi(){const btn=document.getElementById('ciBtn');if(!btn)return;const done=S.lastCI===td();btn.disabled=done;btn.textContent=done?'今天已经打卡了！':'我今天上学啦！';document.getElementById('ciM').innerHTML=done?'<span style="font-size:46px">🎉</span>':avInner(58);document.getElementById('ciT').textContent=done?'太棒了！今天已打卡！':'今天去上学了吗？';document.getElementById('ciS').innerHTML=done?'明天继续加油，赚更多能量星！':`按下按钮，获得 <strong>${S.cfg.checkin} 颗能量星</strong>！`;}
+function renderCi(){const btn=document.getElementById('ciBtn');if(!btn)return;const done=S.lastCI===td();const card=btn.closest('.ci-card');if(card)card.classList.toggle('done',done);btn.disabled=done;btn.textContent=done?'今天已经打卡了！':'我今天上学啦！';document.getElementById('ciM').innerHTML=done?'':avInner(58);document.getElementById('ciT').textContent=done?'✅ 今天已打卡！明天继续加油':'今天去上学了吗？';document.getElementById('ciS').innerHTML=done?'':`按下按钮，获得 <strong>${S.cfg.checkin} 颗能量星</strong>！`;}
 function renderTasks(){const el=document.getElementById('tGrid');if(!el)return;const arr=S.cfg.tasks;el.innerHTML=arr.map((t,i)=>`<button class="taskbtn" data-i="${i}"><span class="tb-emo">${t.i}</span><span class="tb-tx"><span class="tb-nm">${esc(t.label)}</span><span class="tb-pt">+${t.p} ⭐</span></span></button>`).join('');el.querySelectorAll('.taskbtn').forEach(b=>b.addEventListener('click',()=>{const t=arr[b.dataset.i];commit(t.label,t.p,'⭐',t.attr,b);showToast('⭐ +'+t.p+' '+t.label);}));}
-function renderAbilities(){const el=document.getElementById('abilBody');if(!el)return;const max=Math.max(10,...ATTR_ORDER.map(k=>S.abilities[k]||0));el.innerHTML=ATTR_ORDER.map(k=>{const a=ATTRS[k];const v=S.abilities[k]||0;const pct=Math.round(v/max*100);return `<div class="abil" data-a="${k}"><div class="abil-i" style="background:${a.c}22;border-color:${a.c}66">${a.i}</div><div class="abil-m"><div class="abil-nm">${a.name} <b>${v}</b></div><div class="abil-bar"><div class="abil-fill" style="width:${pct}%;background:${a.c}"></div></div></div></div>`;}).join('');}
+function renderAbilities(){const el=document.getElementById('abilBody');if(!el)return;const max=Math.max(10,...ATTR_ORDER.map(k=>S.abilities[k]||0));el.innerHTML=ATTR_ORDER.map(k=>{const a=ATTRS[k];const v=S.abilities[k]||0;const pct=Math.round(v/max*100);return `<div class="abil" data-a="${k}"><div class="abil-i" style="background:${a.c}22;border-color:${a.c}66">${attrIcon(k)}</div><div class="abil-m"><div class="abil-nm">${esc(attrName(k))} <b>${v}</b></div><div class="abil-bar"><div class="abil-fill" style="width:${pct}%;background:${a.c}"></div></div></div></div>`;}).join('');}
 function renderQuick(){const a=document.getElementById('qaChips');if(a){a.innerHTML=S.cfg.qadd.map((x,i)=>`<button class="chip" data-i="${i}">${x.i} ${esc(x.label)} +${x.p}</button>`).join('');a.querySelectorAll('.chip').forEach(c=>c.addEventListener('click',()=>{const x=S.cfg.qadd[c.dataset.i];commit(x.label,x.p,'⭐',x.attr,c);showToast('⭐ +'+x.p+' '+x.label);}));}
  const s=document.getElementById('qsChips');if(s){if(!S.cfg.qsub.length){s.innerHTML='<div style="font-size:12px;color:var(--ink-soft)">（暂无扣分项，扣分只用于严重行为）</div>';}else{s.innerHTML=S.cfg.qsub.map((x,i)=>`<button class="chip minus" data-i="${i}">${x.i} ${esc(x.label)} -${x.p}</button>`).join('');s.querySelectorAll('.chip').forEach(c=>c.addEventListener('click',()=>{const x=S.cfg.qsub[c.dataset.i];commit(x.label,-x.p,'💫',null,c);showToast('💫 -'+x.p+' '+x.label);}));}}}
 function renderRw(){
@@ -194,7 +215,9 @@ function sQs(i,f,v){const r=draft.qsub[i];if(!r)return;if(f==='i')r.i=(v||r.i).s
 function sQsDel(i){draft.qsub.splice(i,1);markDirty();renderSettings();}
 function sQsAdd(){draft.qsub.push({i:'⚠️',label:'严重行为',p:5});markDirty();renderSettings();}
 function loadQsPreset(k){draft.qsub=clone(QSUB_PRESETS[k]);markDirty();renderSettings();}
-function attrOpts(cur){return ATTR_ORDER.map(k=>`<option value="${k}"${k===cur?' selected':''}>${ATTRS[k].i}${ATTRS[k].name}</option>`).join('');}
+function dMeta(k){return (draft&&draft.attrs&&draft.attrs[k])||attrMeta(k);}
+function attrOpts(cur){return ATTR_ORDER.map(k=>`<option value="${k}"${k===cur?' selected':''}>${dMeta(k).i}${dMeta(k).name}</option>`).join('');}
+function sAttr(k,f,v){if(!draft.attrs)draft.attrs=clone(DEFAULT_ATTRS_META);const m=draft.attrs[k]||(draft.attrs[k]={...DEFAULT_ATTRS_META[k]});if(f==='i')m.i=(v||m.i).slice(0,2);else if(f==='name')m.name=v.slice(0,6)||m.name;markDirty();}
 function renderSettings(){const el=document.getElementById('settingsBody');if(!el)return;if(!draft)openDraft();
  const lvOpts=n=>RANKS.map(r=>`<option value="${r.lv}"${r.lv===n?' selected':''}>LV.${r.lv}</option>`).join('');
  el.innerHTML=
@@ -202,6 +225,9 @@ function renderSettings(){const el=document.getElementById('settingsBody');if(!e
   <div class="subhd">🎁 奖励兑换设置</div>
   <div class="set-hd"><span style="width:32px"></span><span style="flex:1">名称</span><span style="width:58px;text-align:center">花费⭐</span><span>解锁</span></div>
   ${draft.rewards.map((r,i)=>`<div class="set-row"><div class="set-ic" style="background:${r.h}">${r.i}</div><input class="set-name" value="${esc(r.n)}" oninput="sRw(${i},'n',this.value)"><input class="set-cost" type="number" min="0" max="999" value="${r.c}" oninput="sRw(${i},'c',this.value)"><select class="set-lv" onchange="sRw(${i},'lv',this.value)">${lvOpts(r.lv)}</select></div>`).join('')}
+  <div class="subhd">🎯 成长维度（养育目标）</div>
+  <div class="subtip">四个维度代表你最看重的养育目标，加分项会累积到对应维度。可自定义名称和图标。</div>
+  <div class="editlist">${ATTR_ORDER.map(k=>`<div class="editrow"><input class="er-emo" value="${esc(dMeta(k).i)}" maxlength="2" oninput="sAttr('${k}','i',this.value)"><input class="er-nm" value="${esc(dMeta(k).name)}" oninput="sAttr('${k}','name',this.value)"><span style="width:14px;height:14px;border-radius:50%;background:${ATTRS[k].c};flex-shrink:0"></span></div>`).join('')}</div>
   <div class="subhd">⭐ 快捷加分（正向鼓励）</div>
   <div class="subtip">按孩子当前的教育目标挑一套预设，或自由增删。加分会累积到对应的能力值。</div>
   <div class="preset-row">${Object.keys(QADD_PRESETS).map(k=>`<span class="preset-chip" onclick="loadQaPreset('${k}')">${k}</span>`).join('')}</div>
@@ -215,7 +241,7 @@ function renderSettings(){const el=document.getElementById('settingsBody');if(!e
   <div class="savebar"><button class="savebtn ${dirty?'dirty':'clean'}" id="saveBtn" onclick="saveSettings()">${dirty?'✓ 保存并同步给全家':'设置已保存 ✓'}</button><div class="savehint" id="saveHint">${dirty?'有修改还没保存':''}</div></div>
   <button class="s-btn" style="width:100%;margin-top:10px" onclick="resetCfg()">恢复默认设置</button>`;
 }
-function resetCfg(){showCC('<span style="font-size:40px">↩️</span>','恢复默认设置？','把打卡奖励、奖励列表、快捷加分/扣分都恢复成初始（不影响已有积分、能力和记录）。',()=>{S.cfg={checkin:10,rewards:cloneArr(DEFAULT_RWS),tasks:cloneArr(DEFAULT_TASKS),qadd:cloneArr(DEFAULT_QADD),qsub:cloneArr(DEFAULT_QSUB)};save();pushCloud();openDraft();renderAll();showToast('已恢复默认设置');});}
+function resetCfg(){showCC('<span style="font-size:40px">↩️</span>','恢复默认设置？','把打卡奖励、奖励列表、快捷加分/扣分都恢复成初始（不影响已有积分、能力和记录）。',()=>{S.cfg={checkin:10,rewards:cloneArr(DEFAULT_RWS),tasks:cloneArr(DEFAULT_TASKS),qadd:cloneArr(DEFAULT_QADD),qsub:cloneArr(DEFAULT_QSUB),attrs:clone(DEFAULT_ATTRS_META)};save();pushCloud();openDraft();renderAll();showToast('已恢复默认设置');});}
 
 // ===== 头像面板 =====
 function showAvPanel(){const p=document.getElementById('avPanel');p.style.display='';bindGrid('avPGrid',P.avId||'',av=>{P.avId=av.id;P.e='';P.g=av.g;save();renderHdr();});const prev=document.getElementById('avPPrev');if(prev)prev.innerHTML=avInner(44);}
@@ -240,23 +266,36 @@ function cancelEdit(){editingIdx=-1;renderHist();}
 function saveEdit(i){const rIn=document.getElementById('ehR'),pIn=document.getElementById('ehP');const h=S.hist[i];if(!h){editingIdx=-1;renderHist();return;}const nr=(rIn.value||h.r).slice(0,30);let np=parseInt(pIn.value);if(isNaN(np))np=h.p;np=Math.max(-999,Math.min(999,np));applyRevert(h);h.r=nr;h.p=np;S.points=Math.max(0,S.points+np);if(np>0){S.lifetime+=np;if(h.attr&&S.abilities[h.attr]!==undefined)S.abilities[h.attr]+=np;}editingIdx=-1;save();pushCloud();renderAll();showToast('已修改记录');}
 
 // ===== 动画 =====
-function flyGains(srcEl,pts){const hp=document.getElementById('hpts');if(!hp)return;const t=hp.getBoundingClientRect();const tx=t.left+t.width/2,ty=t.top+t.height/2;let sx=tx,sy=ty+90;if(srcEl&&srcEl.getBoundingClientRect){const s=srcEl.getBoundingClientRect();sx=s.left+s.width/2;sy=s.top+s.height/2;}
+function flyGains(srcEl,pts){const mb=document.getElementById('miniBar');const useMini=mb&&mb.classList.contains('show');const numEl=useMini?document.getElementById('mpts'):document.getElementById('hpts');const barEl=useMini?document.getElementById('mfill'):document.getElementById('pfill');if(!numEl)return;const t=numEl.getBoundingClientRect();const tx=t.left+t.width/2,ty=t.top+t.height/2;let sx=tx,sy=ty+90;if(srcEl&&srcEl.getBoundingClientRect){const s=srcEl.getBoundingClientRect();sx=s.left+s.width/2;sy=s.top+s.height/2;}
  const n=Math.min(Math.max(pts,1),8);
  for(let i=0;i<n;i++){const s=document.createElement('div');s.className='flystar';s.textContent='⭐';s.style.fontSize=(17+Math.random()*9)+'px';s.style.left='0';s.style.top='0';s.style.opacity='0';s.style.transform=`translate(${sx-10}px,${sy-10}px) scale(.5)`;document.body.appendChild(s);
   const jx=(Math.random()-.5)*40;
   requestAnimationFrame(()=>{s.style.opacity='1';s.style.transform=`translate(${sx-10+jx}px,${sy-30}px) scale(1)`;setTimeout(()=>{s.style.transform=`translate(${tx-10}px,${ty-10}px) scale(.55)`;s.style.opacity='.15';},70+i*70);});
   setTimeout(()=>s.remove(),70+i*70+820);}
  const g=document.createElement('div');g.className='gainpop';g.textContent='+'+pts;g.style.color='#e0a90f';g.style.left=(sx-16)+'px';g.style.top=(sy-34)+'px';document.body.appendChild(g);setTimeout(()=>g.remove(),1250);
- setTimeout(()=>{hp.classList.add('bump');setTimeout(()=>hp.classList.remove('bump'),500);const pf=document.getElementById('pfill');if(pf){pf.classList.add('flash');setTimeout(()=>pf.classList.remove('flash'),700);}},70+n*70+240);}
+ setTimeout(()=>{numEl.classList.add('bump');setTimeout(()=>numEl.classList.remove('bump'),500);if(barEl){barEl.classList.add('flash');setTimeout(()=>barEl.classList.remove('flash'),700);}},70+n*70+240);}
 function pulseAbil(attr){const el=document.querySelector('.abil[data-a="'+attr+'"]');if(el){el.classList.remove('pulse');void el.offsetWidth;el.classList.add('pulse');setTimeout(()=>el.classList.remove('pulse'),700);}}
 function checkLvUp(oldLv){const nl=rankOf(S.lifetime);if(nl.lv>oldLv)setTimeout(()=>showLevelUp(nl.lv),720);}
-function showLevelUp(newLv){const rk=RANKS.find(r=>r.lv===newLv);if(!rk)return;document.getElementById('lvHero').innerHTML=avInner(96);document.getElementById('lvBadge').textContent='✦ LEVEL UP · 升级啦 ✦';document.getElementById('lvTitle').textContent='LV.'+newLv+' '+rk.name;
+function growLine(k){return {courage:'变得更勇敢了！⚡',wisdom:'变得更聪明了！🧠',fitness:'体能更强壮了！🏃',social:'更会和大家相处了！🤝'}[k]||'变得更棒了！';}
+function showLevelUp(newLv){const rk=RANKS.find(r=>r.lv===newLv);if(!rk)return;
+ const hero=document.getElementById('lvHero'),ghost=document.getElementById('lvGhost'),rays=document.getElementById('lvRays'),shock=document.getElementById('lvShock'),tag=document.getElementById('lvLvlTag');
+ const heroSvg=avInner(96);hero.innerHTML=heroSvg;ghost.innerHTML=heroSvg;
+ tag.textContent='LV.'+newLv;
+ document.getElementById('lvBadge').textContent='✦ LEVEL UP · 升级啦 ✦';
+ document.getElementById('lvTitle').textContent='LV.'+newLv+' '+rk.name;
  let top=ATTR_ORDER[0];ATTR_ORDER.forEach(k=>{if((S.abilities[k]||0)>(S.abilities[top]||0))top=k;});
- const lines={wisdom:'变得更聪明了！🧠',body:'变得更强壮了！💪',heart:'变得更有爱心了！❤️',courage:'变得更勇敢了！⚡'};
- document.getElementById('lvSub').textContent='你的小英雄'+lines[top];
+ document.getElementById('lvSub').textContent='你的小英雄长大了，'+growLine(top);
  const max=Math.max(10,...ATTR_ORDER.map(k=>S.abilities[k]||0));
- document.getElementById('lvAttrs').innerHTML=ATTR_ORDER.map(k=>{const a=ATTRS[k];const v=S.abilities[k]||0;const pct=Math.round(v/max*100);return `<div class="abil" data-a="${k}"><div class="abil-i" style="background:${a.c}22;border-color:${a.c}66">${a.i}</div><div class="abil-m"><div class="abil-nm">${a.name} <b>${v}</b></div><div class="abil-bar"><div class="abil-fill" style="width:${pct}%;background:${a.c}"></div></div></div></div>`;}).join('');
- document.getElementById('lvOverlay').classList.add('show');sparkle();}
+ document.getElementById('lvAttrs').innerHTML=ATTR_ORDER.map(k=>{const a=ATTRS[k];const v=S.abilities[k]||0;const pct=Math.round(v/max*100);return `<div class="abil" data-a="${k}"><div class="abil-i" style="background:${a.c}22;border-color:${a.c}66">${attrIcon(k)}</div><div class="abil-m"><div class="abil-nm">${esc(attrName(k))} <b>${v}</b></div><div class="abil-bar"><div class="abil-fill" data-pct="${pct}" style="width:0%;background:${a.c}"></div></div></div></div>`;}).join('');
+ document.getElementById('lvOverlay').classList.add('show');
+ // 多阶段：重置 → 光芒展开 + 英雄从小长大 + 冲击波 + 等级牌弹出
+ [hero,ghost,rays,shock,tag].forEach(e=>e.classList.remove('grow','flex','on'));
+ void hero.offsetWidth;
+ rays.classList.add('on');ghost.classList.add('on');hero.classList.add('grow');shock.classList.add('on');tag.classList.add('on');
+ setTimeout(()=>hero.classList.add('flex'),1500);
+ setTimeout(()=>sparkle(),650);
+ setTimeout(()=>sparkle(),1150);
+ setTimeout(()=>{document.querySelectorAll('#lvAttrs .abil-fill').forEach(f=>{f.style.width=(f.dataset.pct||0)+'%';});},1300);}
 function closeLevelUp(){document.getElementById('lvOverlay').classList.remove('show');}
 function sparkle(){const box=document.querySelector('.lvbox');if(!box)return;const r=box.getBoundingClientRect();const es=['✨','⭐','🌟','💫'];for(let i=0;i<16;i++){const s=document.createElement('div');s.className='spark';s.textContent=es[i%4];s.style.left=(r.left+Math.random()*r.width)+'px';s.style.top=(r.top+r.height*0.28+Math.random()*r.height*0.5)+'px';s.style.fontSize=(16+Math.random()*13)+'px';s.style.animationDelay=(Math.random()*0.45)+'s';document.body.appendChild(s);setTimeout(()=>s.remove(),1750);}}
 
