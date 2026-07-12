@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>小英雄上学积分</title>
+<meta name="description" content="每天上学赚能量星，升级解锁奖励，全家共享">
+<meta name="theme-color" content="#4a9e97">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icons/icon-180.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="小英雄积分">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Noto+Sans+SC:wght@400;500;700&family=Noto+Serif+SC:wght@500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+ --font-sans:'Noto Sans SC',-apple-system,BlinkMacSystemFont,'PingFang SC',sans-serif;
+ --font-serif:'Noto Serif SC','Cinzel',serif;
+ --font-num:'Cinzel','Noto Serif SC',serif;
+ --font-mono:ui-monospace,Menlo,Consolas,monospace;
+ --bg:#f3f0e4; --panel:#fffdf7; --panel2:#f6f2e6;
+ --line:rgba(90,80,55,.16); --line2:rgba(90,80,55,.28);
+ --ink:#4a463a; --ink-soft:#948b76;
+ --teal:#3fb3a6; --teal-d:#2f958a;
+ --sage:#89bd7e; --sage-d:#5f8f56;
+ --gold:#d0ac54; --gold-d:#ac8a34; --gold-l:#ecd79a;
+ --blue:#77a8cf; --purple:#9a86bb;
+ --danger:#cf7d60; --danger-d:#b0654a;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{background:var(--bg);min-height:100%}
+body{font-family:var(--font-sans);color:var(--ink);padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom);display:flex;justify-content:center}
+.w{width:100%;max-width:540px;padding:14px 14px 28px;position:relative;min-height:100vh}
+.bang{font-family:var(--font-serif);font-weight:700;letter-spacing:.5px}
+.ink{border:1px solid var(--line);box-shadow:0 6px 20px rgba(70,58,34,.08)}
+.ink2{border:1px solid var(--line);box-shadow:0 3px 12px rgba(70,58,34,.06)}
+
+.toast{position:fixed;top:calc(env(safe-area-inset-top) + 12px);left:50%;transform:translateX(-50%) translateY(-120px);background:rgba(56,66,62,.96);color:#f3ecd7;padding:12px 22px;border:1px solid rgba(230,215,170,.35);border-radius:14px;font-size:16px;z-index:60;transition:transform .4s cubic-bezier(.22,1,.36,1);white-space:nowrap;pointer-events:none;box-shadow:0 8px 24px rgba(0,0,0,.18);font-family:var(--font-sans);max-width:92vw;overflow:hidden;text-overflow:ellipsis}
+.toast.show{transform:translateX(-50%) translateY(0)}
+
+.sdots{display:flex;justify-content:center;gap:9px;margin-bottom:16px}
+.sd{width:9px;height:9px;border-radius:50%;background:var(--line2);transition:all .3s}
+.sd.on{width:28px;border-radius:5px;background:var(--teal)}
+.scard{background:var(--panel);border-radius:18px;padding:24px 20px}
+.st{font-size:22px;margin-bottom:6px;color:var(--ink);font-family:var(--font-serif);font-weight:700}
+.ss{font-size:14px;color:var(--ink-soft);margin-bottom:20px;line-height:1.6}
+.av-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px}
+.av-opt{border-radius:14px;padding:9px 4px 6px;text-align:center;cursor:pointer;border:1px solid var(--line);background:var(--panel2);transition:all .18s}
+.av-opt:active{transform:scale(.96)}
+.av-opt.sel{border-color:var(--teal);background:#e8f3f0;box-shadow:0 0 0 2px rgba(74,158,151,.25)}
+.av-opt svg{display:block;margin:0 auto 2px}
+.av-lbl{font-size:11px;color:var(--ink-soft)}
+.cust-row{display:flex;gap:10px;align-items:center;margin-bottom:16px}
+.cust-prev{width:50px;height:50px;border-radius:50%;background:var(--panel2);display:flex;align-items:center;justify-content:center;font-size:28px;flex-shrink:0;border:1px solid var(--line)}
+.big-in{width:100%;padding:14px 16px;border-radius:12px;border:1px solid var(--line2);font-size:22px;text-align:center;background:var(--panel);color:var(--ink);margin-bottom:14px;font-family:var(--font-serif)}
+.big-in:focus{outline:none;border-color:var(--teal);box-shadow:0 0 0 3px rgba(74,158,151,.15)}
+.nxt{width:100%;padding:14px;border-radius:13px;border:1px solid rgba(0,0,0,.05);background:linear-gradient(180deg,#5cc4b6,#43ab9e);color:#fff;font-size:17px;cursor:pointer;box-shadow:0 5px 14px rgba(74,158,151,.3);transition:all .12s;font-family:var(--font-serif);font-weight:700;letter-spacing:.5px}
+.nxt:active{transform:translateY(2px);box-shadow:0 2px 8px rgba(74,158,151,.25)}
+.nxt:disabled{background:#c4c0b2;box-shadow:none;cursor:not-allowed}
+.skip{display:block;text-align:center;margin-top:12px;font-size:13px;color:var(--ink-soft);cursor:pointer}
+.fam-opts{display:flex;flex-direction:column;gap:11px;margin-bottom:14px}
+.fam-opt{display:flex;align-items:center;gap:14px;padding:15px;border-radius:14px;border:1px solid var(--line);background:var(--panel2);cursor:pointer;transition:all .15s}
+.fam-opt:active{transform:scale(.99);background:#eef2e6}
+.fam-opt strong{display:block;font-size:16px;margin-bottom:2px;color:var(--ink);font-family:var(--font-serif)}
+.fam-opt span{font-size:12px;color:var(--ink-soft)}
+.ji{width:100%;padding:12px 14px;border-radius:10px;border:1px solid var(--line2);font-size:13px;background:var(--panel);color:var(--ink);font-family:var(--font-mono);margin-bottom:8px}
+
+.hero{border-radius:20px;padding:18px 16px 20px;color:#fefdf5;text-align:center;margin-bottom:14px;position:relative;overflow:hidden;background:linear-gradient(160deg,#54c6b6 0%,#78cc9f 58%,#95d489 100%)}
+.hero::before{content:'';position:absolute;inset:0;background:repeating-radial-gradient(circle at 72% 26%,rgba(255,255,255,.06) 0 1.2px,transparent 1.2px 24px);opacity:.9}
+.hero::after{content:'';position:absolute;inset:0;background:repeating-radial-gradient(circle at 20% 88%,rgba(255,255,255,.05) 0 1px,transparent 1px 30px);opacity:.8}
+.hz{position:relative;z-index:2}
+.sync-ind{position:absolute;top:13px;right:15px;display:flex;align-items:center;gap:5px;font-size:11px;opacity:.95;z-index:3}
+.sdi{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.5);flex-shrink:0}
+.sdi.ok{background:#bfe9c8}.sdi.err{background:#f0b7a6}.sdi.spin{background:#fff;animation:bl 1s infinite}
+@keyframes bl{0%,100%{opacity:1}50%{opacity:.2}}
+.rankchip{position:absolute;top:12px;left:14px;z-index:3;background:linear-gradient(180deg,#e3cf94,#cdb267);color:#5a4a22;border:1px solid rgba(120,95,30,.35);border-radius:10px;padding:4px 11px;font-size:13px;box-shadow:0 3px 8px rgba(0,0,0,.12);font-family:var(--font-serif);font-weight:700}
+.hero-av-wrap{display:inline-block;position:relative;margin:8px 0 4px;cursor:pointer;animation:float 3.5s ease-in-out infinite}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
+.hero-av{width:92px;height:92px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:46px;border:2px solid rgba(255,255,255,.7);background:rgba(255,255,255,.9);overflow:hidden;box-shadow:0 6px 16px rgba(0,0,0,.15)}
+.hero-av-badge{position:absolute;bottom:0;right:-2px;background:#fff;color:var(--teal-d);border:1px solid var(--line);border-radius:50%;width:26px;height:26px;display:flex;align-items:center;justify-content:center;font-size:13px;box-shadow:0 2px 6px rgba(0,0,0,.15)}
+.hero-nm{font-size:15px;margin-bottom:0;opacity:.95;font-family:var(--font-serif)}
+.hero-pts{font-size:62px;line-height:1.05;font-family:var(--font-num);font-weight:700;color:#fdf6df;text-shadow:0 2px 8px rgba(0,0,0,.15)}
+.hero-pts-l{font-size:13px;opacity:.9;margin-bottom:12px;letter-spacing:1px}
+.pbar-wrap{max-width:300px;margin:0 auto}
+.pbar{height:14px;background:rgba(0,0,0,.18);border:1px solid rgba(255,255,255,.25);border-radius:9px;overflow:hidden;position:relative}
+.pbar-fill{height:100%;background:linear-gradient(90deg,#e3cf94,#c6a24e);transition:width .6s cubic-bezier(.22,1,.36,1);border-radius:8px 0 0 8px}
+.pbar-txt{font-size:11.5px;margin-top:6px;opacity:.95}
+
+.av-panel{background:var(--panel);border-radius:16px;padding:16px;margin-bottom:12px}
+.cc{background:var(--panel);border-radius:16px;padding:22px;text-align:center;margin-bottom:12px}
+.cc-icon{margin-bottom:10px}
+.cc h3{font-size:19px;margin-bottom:6px;color:var(--ink);font-family:var(--font-serif);font-weight:700}
+.cc p{font-size:14px;color:var(--ink-soft);margin-bottom:18px;line-height:1.5}
+.cc-btns{display:flex;gap:10px}
+.cc-btns button{flex:1;padding:12px;border-radius:11px;border:1px solid var(--line);font-size:16px;cursor:pointer;font-family:var(--font-serif);font-weight:700}
+.cy{background:linear-gradient(180deg,#5cc4b6,#43ab9e);color:#fff;border-color:rgba(0,0,0,.05);box-shadow:0 4px 12px rgba(74,158,151,.28)}
+.cy:active{transform:translateY(2px)}
+.cn{background:var(--panel2);color:var(--ink)}
+
+.tabs{display:flex;gap:8px;margin-bottom:14px}
+.tb{flex:1;padding:11px 3px 9px;border-radius:14px;border:1px solid var(--line);font-size:12px;cursor:pointer;background:var(--panel);color:var(--ink-soft);transition:all .15s;font-family:var(--font-sans);font-weight:500}
+.tb:active{transform:scale(.97)}
+.tb.on{color:#fff;border-color:transparent}
+.tb.on.t-ci{background:var(--teal)}
+.tb.on.t-rw{background:var(--gold)}
+.tb.on.t-hi{background:var(--blue)}
+.tb.on.t-ad{background:var(--purple)}
+.tb-i{font-size:21px;display:block;margin-bottom:2px;line-height:1;filter:grayscale(.15)}
+.sec{display:none}.sec.on{display:block;animation:fade .35s}
+@keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+.ci-card{background:var(--panel);border-radius:18px;padding:22px 16px;text-align:center;margin-bottom:12px}
+.ci-mascot{margin-bottom:6px}
+.ci-card h3{font-size:20px;margin-bottom:6px;color:var(--ink);font-family:var(--font-serif);font-weight:700}
+.ci-card p{font-size:14px;color:var(--ink-soft);margin-bottom:16px}
+.bb{width:100%;padding:15px;border-radius:14px;border:1px solid rgba(0,0,0,.05);font-size:19px;cursor:pointer;transition:all .12s;font-family:var(--font-serif);font-weight:700;letter-spacing:.5px}
+.bb-go{background:linear-gradient(180deg,#98c67f,#75ac5f);color:#fff;box-shadow:0 6px 16px rgba(111,154,99,.3)}
+.bb-go:active{transform:translateY(2px);box-shadow:0 3px 10px rgba(111,154,99,.25)}
+.bb-go:disabled{background:#c1c4b4;box-shadow:none;cursor:not-allowed}
+.bb-d{background:linear-gradient(180deg,#cc8168,#b3634a);color:#fff;box-shadow:0 5px 14px rgba(176,90,64,.25)}
+.bb-d:active{transform:translateY(2px)}
+
+.card{background:var(--panel);border-radius:16px;padding:16px;margin-bottom:11px}
+.ch{font-size:15px;color:var(--ink);margin-bottom:12px;font-family:var(--font-serif);font-weight:700}
+.lvlbanner{background:linear-gradient(160deg,#41514c,#39433f);color:#f2ecd6;border-radius:16px;padding:15px 16px;margin-bottom:12px;text-align:center;border:1px solid rgba(230,215,170,.2)}
+.lvlbanner .lv-now{font-size:16px;margin-bottom:9px;font-family:var(--font-serif)}
+.lvlbanner .lv-now b{color:var(--gold-l)}
+.lvlbanner .pbar{background:rgba(255,255,255,.14);border-color:rgba(255,255,255,.18)}
+
+.rw-grid{display:grid;grid-template-columns:1fr 1fr;gap:11px;margin-bottom:12px}
+.rw-card{background:var(--panel);border-radius:15px;border:1px solid var(--line);box-shadow:0 3px 12px rgba(70,58,34,.06);padding:14px 10px;text-align:center;cursor:pointer;transition:all .15s;position:relative}
+.rw-card:active{transform:scale(.97)}
+.rw-ic{width:54px;height:54px;border-radius:50%;border:1px solid var(--line);display:flex;align-items:center;justify-content:center;font-size:27px;margin:0 auto 8px}
+.rw-n{font-size:14px;margin-bottom:6px;color:var(--ink)}
+.rw-c{display:inline-flex;align-items:center;gap:3px;background:#f5ecd2;color:var(--gold-d);border:1px solid rgba(166,132,47,.3);border-radius:11px;padding:2px 10px;font-size:12px;font-weight:500}
+.rw-card.lockL{cursor:not-allowed;background:var(--panel2)}
+.rw-card.lockE{opacity:.6;cursor:not-allowed}
+.lockbadge{position:absolute;top:-9px;left:50%;transform:translateX(-50%);background:var(--purple);color:#fff;border:1px solid rgba(0,0,0,.05);border-radius:9px;padding:2px 9px;font-size:11px;white-space:nowrap;box-shadow:0 2px 6px rgba(0,0,0,.12)}
+
+.hl{display:flex;flex-direction:column;gap:8px}
+.hi{display:flex;align-items:center;gap:12px;background:var(--panel);border:1px solid var(--line);border-radius:13px;padding:11px 13px;box-shadow:0 2px 8px rgba(70,58,34,.05)}
+.hi-ic{width:36px;height:36px;border-radius:50%;border:1px solid var(--line);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.hi-inf{flex:1}
+.hi-t{font-size:14px;color:var(--ink)}
+.hi-d{font-size:11px;color:var(--ink-soft);margin-top:1px}
+.hi-p{font-size:18px;font-family:var(--font-num);font-weight:700}
+.pl{color:var(--sage-d)}.mn{color:var(--danger)}
+
+.ar{display:flex;gap:8px;margin-bottom:10px}
+.ai{flex:1;padding:11px 12px;border-radius:10px;border:1px solid var(--line2);font-size:14px;background:var(--panel);color:var(--ink);font-family:var(--font-sans)}
+.ai:focus{outline:none;border-color:var(--teal);box-shadow:0 0 0 3px rgba(74,158,151,.13)}
+.an{max-width:72px;text-align:center}
+.ab{padding:11px 14px;border-radius:10px;border:1px solid rgba(0,0,0,.05);font-size:15px;cursor:pointer;font-family:var(--font-serif);font-weight:700}
+.ab-a{background:linear-gradient(180deg,#98c67f,#75ac5f);color:#fff;box-shadow:0 3px 10px rgba(111,154,99,.25)}
+.ab-a:active{transform:translateY(2px)}
+.ab-s{background:linear-gradient(180deg,#cc8168,#b3634a);color:#fff;box-shadow:0 3px 10px rgba(176,90,64,.22)}
+.ab-s:active{transform:translateY(2px)}
+.chip{display:inline-flex;align-items:center;padding:8px 13px;border-radius:20px;border:1px solid var(--line);font-size:13px;cursor:pointer;background:#eef3e8;color:var(--sage-d);margin:3px;transition:all .13s}
+.chip:active{transform:scale(.95)}
+.chip.minus{background:#f6e9e3;color:var(--danger-d)}
+.sc-box{font-family:var(--font-mono);font-size:13px;background:var(--panel2);padding:11px 13px;border-radius:10px;word-break:break-all;color:var(--ink);border:1px dashed var(--line2);cursor:pointer;margin:8px 0}
+.s-row{display:flex;gap:8px;margin-top:8px}
+.s-btn{flex:1;padding:10px;border-radius:10px;border:1px solid var(--line2);background:var(--panel);font-size:13px;cursor:pointer;color:var(--ink);font-family:var(--font-sans)}
+.empty{text-align:center;padding:34px 16px;color:var(--ink-soft)}
+.ei{font-size:42px;margin-bottom:10px}
+.installtip{background:var(--panel2);border:1px dashed var(--line2);border-radius:11px;padding:11px 13px;font-size:12.5px;color:var(--ink-soft);margin-top:10px;line-height:1.7}
+
+.set-row{display:flex;align-items:center;gap:8px;padding:9px 0;border-bottom:1px solid var(--line)}
+.set-row:last-child{border-bottom:none}
+.set-ic{width:32px;height:32px;border-radius:50%;border:1px solid var(--line);display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0}
+.set-name{flex:1;padding:7px 9px;border-radius:8px;border:1px solid var(--line2);font-size:13px;background:var(--panel);color:var(--ink);font-family:var(--font-sans);min-width:0}
+.set-cost{width:58px;padding:7px 6px;border-radius:8px;border:1px solid var(--line2);font-size:13px;text-align:center;background:var(--panel);color:var(--ink);font-family:var(--font-num);font-weight:700}
+.set-lv{padding:7px 4px;border-radius:8px;border:1px solid var(--line2);font-size:12px;background:var(--panel);color:var(--ink);font-family:var(--font-sans)}
+.set-name:focus,.set-cost:focus,.set-lv:focus{outline:none;border-color:var(--teal)}
+.set-hd{display:flex;gap:8px;font-size:11px;color:var(--ink-soft);padding:0 0 4px;align-items:center}
+</style>
+</head>
+<body>
+<div class="w">
+  <div class="toast bang" id="toast"></div>
+
+  <div id="SW">
+    <div class="sdots" id="sdots"></div>
+    <div class="scard ink" id="scard"></div>
+  </div>
+
+  <div id="MW" style="display:none">
+    <div class="hero ink" id="hdr">
+      <div class="rankchip bang" id="rchip">LV.1</div>
+      <div class="sync-ind"><div class="sdi" id="sdi"></div><span id="stxt"></span></div>
+      <div class="hz">
+        <div class="hero-av-wrap" onclick="showAvPanel()">
+          <div class="hero-av" id="hav"></div>
+          <div class="hero-av-badge">✏️</div>
+        </div>
+        <div class="hero-nm" id="hnm"></div>
+        <div class="hero-pts bang" id="hpts">0</div>
+        <div class="hero-pts-l">能量星</div>
+        <div class="pbar-wrap">
+          <div class="pbar"><div class="pbar-fill" id="pfill" style="width:0%"></div></div>
+          <div class="pbar-txt" id="ptxt"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="av-panel ink2" id="avPanel" style="display:none">
+      <div class="ch">选择你的英雄形象</div>
+      <div class="av-grid" id="avPGrid"></div>
+      <div class="cust-row">
+        <div class="cust-prev" id="avPPrev"></div>
+        <input class="ai" style="flex:1;font-size:18px" placeholder="或输入喜欢的表情 🦸" id="avCIn" maxlength="2" />
+        <button class="ab ab-a" onclick="applyCustomAv()">确定</button>
+      </div>
+      <button class="s-btn" style="width:100%;margin-top:6px" onclick="closeAvPanel()">关闭</button>
+    </div>
+
+    <div class="cc ink2" id="ccCard" style="display:none">
+      <div class="cc-icon" id="ccIcon"></div>
+      <h3 id="ccT"></h3>
+      <p id="ccD"></p>
+      <div class="cc-btns">
+        <button class="cn" onclick="hideCC()">取消</button>
+        <button class="cy" id="ccY" onclick="doCC()">确定</button>
+      </div>
+    </div>
+
+    <div class="tabs">
+      <button class="tb t-ci on" onclick="goTab('ci',this)"><span class="tb-i">🏫</span>打卡</button>
+      <button class="tb t-rw" onclick="goTab('rw',this)"><span class="tb-i">🎁</span>奖励</button>
+      <button class="tb t-hi" onclick="goTab('hi',this)"><span class="tb-i">📋</span>记录</button>
+      <button class="tb t-ad" onclick="goTab('ad',this)"><span class="tb-i">🔑</span>家长</button>
+    </div>
+
+    <div class="sec on" id="sec-ci">
+      <div class="ci-card ink2">
+        <div class="ci-mascot" id="ciM"></div>
+        <h3 id="ciT">今天去上学了吗？</h3>
+        <p id="ciS">按下按钮，获得能量星！</p>
+        <button class="bb bb-go" id="ciBtn" onclick="doCI()">我今天上学啦！</button>
+      </div>
+      <div class="card ink2">
+        <div class="ch">今日任务加分</div>
+        <div id="tChips"></div>
+      </div>
+    </div>
+
+    <div class="sec" id="sec-rw">
+      <div class="lvlbanner ink2" id="lvlBanner"></div>
+      <div class="rw-grid" id="rwGrid"></div>
+    </div>
+
+    <div class="sec" id="sec-hi"><div class="hl" id="hList"></div></div>
+
+    <div class="sec" id="sec-ad">
+      <div class="card ink2">
+        <div class="ch">调整能量</div>
+        <div class="ar">
+          <input class="ai" id="adjR" placeholder="原因（如：帮忙收拾玩具）" />
+          <input class="ai an" type="number" id="adjA" value="5" min="1" max="100" />
+        </div>
+        <div style="display:flex;gap:8px">
+          <button class="ab ab-a" style="flex:1" onclick="adj(1)">加分</button>
+          <button class="ab ab-s" style="flex:1" onclick="adj(-1)">扣分</button>
+        </div>
+      </div>
+      <div class="card ink2"><div class="ch">快捷加分</div><div id="qaChips"></div></div>
+      <div class="card ink2"><div class="ch">快捷扣分</div><div id="qsChips"></div></div>
+      <div class="card ink2"><div class="ch">⚙️ 积分与奖励设置</div><div id="settingsBody"></div></div>
+      <div class="card ink2"><div class="ch">家庭共享</div><div id="syncBody"></div></div>
+      <div class="card ink2"><div class="ch">安装到手机桌面</div><div id="installBody"></div></div>
+      <div class="card ink2"><div class="ch">危险操作</div><button class="bb bb-d" onclick="askReset()">重置所有数据</button></div>
+    </div>
+  </div>
+</div>
+
+<script src="app.js"></script>
+<script>
+if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));}
+</script>
+</body>
+</html>
