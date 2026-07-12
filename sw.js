@@ -1,4 +1,4 @@
-const CACHE = 'hero-points-v5';
+const CACHE = 'hero-points-v6';
 const ASSETS = [
   './',
   './index.html',
