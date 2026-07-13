@@ -1,4 +1,4 @@
-const CACHE = 'hero-points-v7';
+const CACHE = 'hero-points-v8';
 const ASSETS = [
   './',
   './index.html',
@@ -21,7 +21,7 @@ self.addEventListener('activate', e => {
 self.addEventListener('fetch', e => {
   const url = new URL(e.request.url);
   // Never cache the family-sync API — always hit the network.
-  if (url.hostname.includes('jsonblob.com')) return;
+  if (url.pathname.startsWith('/api/')) return;
   // App shell: cache-first, fall back to network and update cache.
   if (e.request.method === 'GET' && url.origin === location.origin) {
     e.respondWith(

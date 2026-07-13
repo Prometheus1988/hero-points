@@ -26,14 +26,31 @@ python3 -m http.server 8080
 ```
 （注意：Service Worker 和「添加到主屏幕」需要 https 或 localhost 才生效。）
 
-## 免费部署（推荐 Netlify Drop，约 2 分钟）
-1. 打开 https://app.netlify.com/drop
-2. 把整个 `hero-points-app` 文件夹拖进网页
-3. 得到一个网址（如 `https://xxx.netlify.app`），手机打开即可
-4. 全家在各自手机打开同一网址 →「家长」→ 创建/加入家庭码 → 添加到主屏幕
+## 部署到自己的服务器（推荐，数据私有持久）
 
-也可用 GitHub Pages、Vercel、Cloudflare Pages，都是纯静态托管，免费。
+前端 + 后端同源，一个 Node 进程搞定（`server.js`，零依赖，数据存 `data/<家庭码>.json`）。
 
-## 数据说明
-- 单机数据存在浏览器 localStorage
-- 家庭共享用免费的 jsonblob.com 云存储（家庭码即数据地址）。如需更可靠/私密的后端，可后续换成 Supabase 等。
+**一键部署（在服务器上以 root 运行）：**
+```bash
+bash <(curl -fsSL https://raw.githubusercontent.com/Prometheus1988/hero-points/main/deploy/setup.sh)
+```
+脚本会：装 Node/git → 拉代码到 `/opt/hero-points` → 建 systemd 服务（开机自启/崩溃自愈）→ 启动在 80 端口。
+完成后访问 `http://<服务器公网IP>/`。
+
+> ⚠️ 记得在【腾讯云控制台 → 安全组】放行 TCP 80 端口。
+> HTTPS（PWA 完整安装/微信内最顺滑）需要域名 + 证书，可后续加。
+
+**更新到最新：**
+```bash
+cd /opt/hero-points && git pull && systemctl restart hero-points
+```
+
+## 本地开发
+```bash
+PORT=8090 node server.js   # 打开 http://localhost:8090
+```
+
+## 数据与共享
+- 单机数据存浏览器 localStorage；家庭共享数据存服务器 `data/` 目录（永久保存，随 `git pull` 不会被覆盖，已在 .gitignore）。
+- 家庭码为 6 位短码。分享：家长页「分享给家人（微信）」复制带 `?f=家庭码` 的链接，家人在微信打开即自动加入。
+- 孩子的名字/头像/主题存在共享档案里，家人加入后自动同步。

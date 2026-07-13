@@ -101,7 +101,15 @@ const QSUB_PRESETS={
  '严重行为':[{i:'🥊',label:'打架斗殴',p:5},{i:'🤥',label:'撒谎骗人',p:4}],
  '安全红线':[{i:'🥊',label:'打人',p:5},{i:'⚠️',label:'做危险的事',p:5},{i:'🤥',label:'撒谎骗人',p:4}],
 };
-const BLOB='https://jsonblob.com/api/jsonBlob';
+const API='/api/family';
+const THEMES={
+ forest:{name:'🌿 森林绿',hero:'linear-gradient(160deg,#54c6b6 0%,#78cc9f 58%,#95d489 100%)',teal:'#3fb3a6',tealD:'#2f958a'},
+ frozen:{name:'❄️ 冰雪世界',hero:'linear-gradient(160deg,#8ed3f0 0%,#a7c2ee 55%,#c7b6e6 100%)',teal:'#5aa6d6',tealD:'#3f83b8'},
+ zootopia:{name:'🦊 动物城',hero:'linear-gradient(160deg,#ffb45e 0%,#ff9f72 52%,#ffd670 100%)',teal:'#e08a3c',tealD:'#bd6c1f'},
+ ocean:{name:'🌊 海洋蓝',hero:'linear-gradient(160deg,#3fb4cc 0%,#4aa6d8 55%,#74c8cf 100%)',teal:'#2f95b2',tealD:'#217a93'},
+ sakura:{name:'🌸 樱花粉',hero:'linear-gradient(160deg,#f7a6c2 0%,#f4b7cf 52%,#f8c9ad 100%)',teal:'#e06e95',tealD:'#c25276'},
+ night:{name:'✨ 星空紫',hero:'linear-gradient(160deg,#7a6bc8 0%,#8f7bd0 55%,#a98fd8 100%)',teal:'#7869bf',tealD:'#5d4ea8'},
+};
 
 const clone=o=>JSON.parse(JSON.stringify(o));
 const cloneArr=a=>a.map(x=>({...x}));
@@ -112,6 +120,10 @@ let P=JSON.parse(localStorage.getItem('kp4_P')||'null');
 let S=JSON.parse(localStorage.getItem('kp4_S')||'null')||{points:0,lifetime:0,streak:0,lastCI:null,hist:[]};
 if(S.lifetime===undefined)S.lifetime=S.points||0;
 function ensureCfg(){
+ if(typeof S.points!=='number')S.points=0;
+ if(typeof S.lifetime!=='number')S.lifetime=S.points||0;
+ if(typeof S.streak!=='number')S.streak=0;
+ if(!Array.isArray(S.hist))S.hist=[];
  if(!S.cfg)S.cfg={};
  if(S.cfg.checkin===undefined)S.cfg.checkin=10;
  if(!Array.isArray(S.cfg.rewards)||!S.cfg.rewards.length)S.cfg.rewards=cloneArr(DEFAULT_RWS);
@@ -128,6 +140,9 @@ function ensureCfg(){
  if(S.abilities.body!==undefined){S.abilities.fitness=(S.abilities.fitness||0)+S.abilities.body;delete S.abilities.body;}
  if(S.abilities.heart!==undefined){S.abilities.social=(S.abilities.social||0)+S.abilities.heart;delete S.abilities.heart;}
  ATTR_ORDER.forEach(k=>{if(typeof S.abilities[k]!=='number')S.abilities[k]=0;});
+ // 旧版把名字/头像存在 P 里，迁移到共享档案 S.cfg.profile，方便家人加入后自动同步
+ if(!S.cfg.profile && typeof P==='object' && P && (P.name||P.avId))S.cfg.profile={name:P.name||'小英雄',avId:P.avId||'',e:P.e||'',theme:'forest'};
+ if(S.cfg.profile && !S.cfg.profile.theme)S.cfg.profile.theme='forest';
  (S.hist||[]).forEach(h=>{if(h.attr==='body')h.attr='fitness';else if(h.attr==='heart')h.attr='social';});
  [S.cfg.tasks,S.cfg.qadd].forEach(arr=>arr&&arr.forEach(x=>{if(x.attr==='body')x.attr='fitness';else if(x.attr==='heart')x.attr='social';}));
 }
@@ -141,10 +156,11 @@ function grad(g){return `linear-gradient(150deg,${g[0]},${g[1]})`;}
 function rankOf(lt){let r=RANKS[0];for(const x of RANKS)if(lt>=x.need)r=x;return r;}
 function nextRank(lv){return RANKS.find(x=>x.lv===lv+1)||null;}
 
-async function pushCloud(){if(!P||!P.fid)return;setSS('loading');try{const r=await fetch(`${BLOB}/${P.fid}`,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({S,v:1})});setSS(r.ok?'ok':'err');}catch(e){setSS('err');}}
-async function pullCloud(){if(!P||!P.fid)return;setSS('loading');try{const r=await fetch(`${BLOB}/${P.fid}`);if(!r.ok)throw 0;const d=await r.json();if(d&&d.S){S=d.S;if(S.lifetime===undefined)S.lifetime=S.points||0;ensureCfg();draft=null;save();renderAll();}setSS('ok');}catch(e){setSS('err');}}
-async function createBlob(){try{const r=await fetch(BLOB,{method:'POST',headers:{'Content-Type':'application/json','Accept':'application/json'},body:JSON.stringify({S,v:1})});if(!r.ok)return null;const loc=r.headers.get('Location');return loc?loc.split('/').pop():null;}catch(e){return null;}}
-async function joinBlob(id){try{const r=await fetch(`${BLOB}/${id}`);if(!r.ok)return false;const d=await r.json();if(d&&d.S){S=d.S;if(S.lifetime===undefined)S.lifetime=S.points||0;ensureCfg();draft=null;save();}return true;}catch(e){return false;}}
+async function pushCloud(){if(!P||!P.fid)return;setSS('loading');try{const r=await fetch(`${API}/${P.fid}`,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({S,v:1})});setSS(r.ok?'ok':'err');}catch(e){setSS('err');}}
+async function pullCloud(){if(!P||!P.fid)return;setSS('loading');try{const r=await fetch(`${API}/${P.fid}`);if(!r.ok)throw 0;const d=await r.json();if(d&&d.S){S=d.S;if(S.lifetime===undefined)S.lifetime=S.points||0;ensureCfg();draft=null;save();applyTheme();renderAll();}setSS('ok');}catch(e){setSS('err');}}
+async function createBlob(){try{const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({S,v:1})});if(!r.ok)return null;const d=await r.json();return d.id||null;}catch(e){return null;}}
+async function joinBlob(id){try{const r=await fetch(`${API}/${id}`);if(!r.ok)return false;const d=await r.json();if(d&&d.S){S=d.S;if(S.lifetime===undefined)S.lifetime=S.points||0;ensureCfg();draft=null;save();applyTheme();}return true;}catch(e){return false;}}
+function applyTheme(){const key=(S.cfg&&S.cfg.profile&&S.cfg.profile.theme)||'forest';const t=THEMES[key]||THEMES.forest;const r=document.documentElement.style;r.setProperty('--hero-grad',t.hero);r.setProperty('--teal',t.teal);r.setProperty('--teal-d',t.tealD);}
 function setSS(s){const dot=document.getElementById('sdi'),txt=document.getElementById('stxt');if(!dot)return;dot.className='sdi'+(s==='ok'?' ok':s==='err'?' err':s==='loading'?' spin':'');txt.textContent=s==='ok'?'已同步':s==='err'?'同步失败':s==='loading'?'同步中':'';}
 function startAuto(){if(autoT)clearInterval(autoT);if(P&&P.fid)autoT=setInterval(pullCloud,30000);}
 
@@ -159,18 +175,19 @@ function toggleJoin(){const a=document.getElementById('jArea');if(a)a.style.disp
 async function doCreate(){buildP();save();showToast('正在创建...');const id=await createBlob();if(id){P.fid=id;save();showMain();showToast('🎉 创建成功！家庭码在家长里');}else{showMain();showToast('网络问题，已用本地模式');}}
 async function doJoin(){const inp=document.getElementById('jIn');if(!inp||!inp.value.trim()){showToast('请输入家庭码');return;}buildP();const ok=await joinBlob(inp.value.trim());if(ok){P.fid=inp.value.trim();save();showMain();}else showToast('加入失败，请检查家庭码');}
 function finish(){buildP();save();showMain();}
-function buildP(){const av=AVS.find(a=>a.id===sAv)||AVS[0];P={name:sName.trim()||'小英雄',avId:sCust?'':sAv,e:sCust,g:av.g,fid:null};}
+function buildP(){ensureCfg();const keepTheme=(S.cfg.profile&&S.cfg.profile.theme)||'forest';S.cfg.profile={name:sName.trim()||'小英雄',avId:sCust?'':sAv,e:sCust,theme:keepTheme};if(!P)P={fid:null};if(P.fid===undefined)P.fid=null;save();}
 function bindGrid(id,sel,cb){const g=document.getElementById(id);if(!g)return;g.innerHTML=AVS.map((av,i)=>`<div class="av-opt${av.id===sel?' sel':''}" data-i="${i}">${charSvg(av.id,46)}<span class="av-lbl">${av.l}</span></div>`).join('');g.querySelectorAll('.av-opt').forEach(el=>el.addEventListener('click',()=>{g.querySelectorAll('.av-opt').forEach(e=>e.classList.remove('sel'));el.classList.add('sel');cb(AVS[el.dataset.i]);}));}
 
-function showMain(){document.getElementById('SW').style.display='none';document.getElementById('MW').style.display='';renderAll();startAuto();setupObserver();if(P&&P.fid)pullCloud();}
+function showMain(){applyTheme();document.getElementById('SW').style.display='none';document.getElementById('MW').style.display='';renderAll();startAuto();setupObserver();if(P&&P.fid)pullCloud();}
 let obsBound=false;
 function updateMiniBar(){const hdr=document.getElementById('hdr'),mb=document.getElementById('miniBar');if(!hdr||!mb)return;const b=hdr.getBoundingClientRect().bottom;mb.classList.toggle('show',b<40);}
 function setupObserver(){updateMiniBar();if(obsBound)return;obsBound=true;window.addEventListener('scroll',updateMiniBar,{passive:true});window.addEventListener('resize',updateMiniBar,{passive:true});}
 
 // ===== 渲染 =====
-function avInner(sz){return (P.avId&&CHARS[P.avId])?charSvg(P.avId,sz):`<span style="font-size:${Math.round(sz*0.55)}px">${esc(P.e)||'🦸'}</span>`;}
+function prof(){return (S.cfg&&S.cfg.profile)||{name:'小英雄',avId:'spider',e:'',theme:'forest'};}
+function avInner(sz){const pr=prof();return (pr.avId&&CHARS[pr.avId])?charSvg(pr.avId,sz):`<span style="font-size:${Math.round(sz*0.55)}px">${esc(pr.e)||'🦸'}</span>`;}
 function renderAll(){renderHdr();renderCi();renderTasks();renderAbilities();renderRw();renderHist();renderQuick();renderSync();renderInstall();renderSettings();}
-function renderHdr(){const hdr=document.getElementById('hdr');if(!hdr||!P)return;const rk=rankOf(S.lifetime);const av=document.getElementById('hav');av.innerHTML=avInner(80);av.style.boxShadow=`0 6px 16px rgba(0,0,0,.15),0 0 ${6+rk.lv*4}px rgba(255,240,190,${.15+rk.lv*.06})`;document.getElementById('hnm').textContent=(P.name||'小英雄');document.getElementById('hpts').textContent=S.points;
+function renderHdr(){const hdr=document.getElementById('hdr');if(!hdr)return;const rk=rankOf(S.lifetime);const av=document.getElementById('hav');av.innerHTML=avInner(80);av.style.boxShadow=`0 6px 16px rgba(0,0,0,.15),0 0 ${6+rk.lv*4}px rgba(255,240,190,${.15+rk.lv*.06})`;document.getElementById('hnm').textContent=(prof().name||'小英雄');document.getElementById('hpts').textContent=S.points;
  const nx=nextRank(rk.lv);let pct=100;
  document.getElementById('rchip').textContent='LV.'+rk.lv+' '+rk.name;
  if(nx){const span=nx.need-rk.need,done=S.lifetime-rk.need;pct=Math.max(0,Math.min(100,Math.round(done/span*100)));document.getElementById('pfill').style.width=pct+'%';document.getElementById('ptxt').textContent=`再得 ${nx.need-S.lifetime} 颗 ⭐ 升到 LV.${nx.lv} ${nx.name}`;}
@@ -197,14 +214,18 @@ function renderHist(){const el=document.getElementById('hList');if(!el)return;if
  el.innerHTML=rows.map(({h,idx})=>{const pl=h.p>0;
   if(idx===editingIdx){return `<div class="hi"><div class="hi-edit"><input class="ai" id="ehR" value="${esc(h.r)}"><input class="ai an" id="ehP" type="number" value="${h.p}" style="max-width:66px"><button class="hi-btn" onclick="saveEdit(${idx})">✔️</button><button class="hi-btn" onclick="cancelEdit()">✖️</button></div></div>`;}
   return `<div class="hi"><div class="hi-ic" style="background:${pl?'#e6f2e2':'#f6e9e3'}">${h.ic||(pl?'⭐':'💫')}</div><div class="hi-inf"><div class="hi-t">${esc(h.r)}</div><div class="hi-d">${fmt(h.t)}</div></div><div class="hi-p ${pl?'pl':'mn'}">${pl?'+':''}${h.p}</div><div class="hi-act"><button class="hi-btn" onclick="editHist(${idx})">✏️</button><button class="hi-btn" onclick="delHist(${idx})">🗑️</button></div></div>`;}).join('');}
-function renderSync(){const el=document.getElementById('syncBody');if(!el||!P)return;if(!P.fid){el.innerHTML=`<p style="font-size:13px;color:var(--ink-soft);margin-bottom:12px">创建家庭码后发给家人，所有人都能看到和调整积分。</p><button class="nxt" onclick="adminCreate()">🆕 创建家庭积分本</button><div style="margin-top:10px;display:flex;gap:8px"><input class="ai" id="aJIn" placeholder="或粘贴家庭码加入" style="font-family:var(--font-mono)"/><button class="ab ab-a" onclick="adminJoin()">加入</button></div>`;}else{el.innerHTML=`<div style="display:flex;align-items:center;gap:7px;margin-bottom:8px"><div class="sdi ok"></div><span style="font-size:14px">已连接家庭积分本</span></div><p style="font-size:12px;color:var(--ink-soft);margin-bottom:5px">家庭码（点击复制发给家人）：</p><div class="sc-box" onclick="copyCode()">${P.fid}</div><p style="font-size:12px;color:var(--ink-soft);margin-bottom:8px">家人打开同一个网址 → 家长 → 粘贴家庭码 → 加入，即可共享。</p><div class="s-row"><button class="s-btn" onclick="pullCloud().then(()=>showToast('已同步最新积分 ✨'))">🔄 立即同步</button><button class="s-btn" style="color:var(--danger)" onclick="disconn()">断开连接</button></div>`;}}
+function renderSync(){const el=document.getElementById('syncBody');if(!el||!P)return;if(!P.fid){el.innerHTML=`<p style="font-size:13px;color:var(--ink-soft);margin-bottom:12px">创建家庭码后发给家人，所有人都能看到和调整积分。</p><button class="nxt" onclick="adminCreate()">🆕 创建家庭积分本</button><div style="margin-top:10px;display:flex;gap:8px"><input class="ai" id="aJIn" placeholder="或粘贴家庭码加入" style="font-family:var(--font-mono)"/><button class="ab ab-a" onclick="adminJoin()">加入</button></div>`;}else{el.innerHTML=`<div style="display:flex;align-items:center;gap:7px;margin-bottom:10px"><div class="sdi ok"></div><span style="font-size:14px">已连接家庭积分本</span></div><p style="font-size:12px;color:var(--ink-soft);margin-bottom:4px">家庭码（点击复制）</p><div class="sc-box" style="font-size:22px;letter-spacing:4px;text-align:center;font-weight:700;font-family:var(--font-num)" onclick="copyCode()">${P.fid}</div><button class="nxt" onclick="shareLink()">📲 分享给家人（微信）</button><p style="font-size:12px;color:var(--ink-soft);margin:10px 0 8px;line-height:1.7">家人在<b>微信里打开你发的链接</b>就会自动加入这个积分本；也可以让家人打开网址后在「家长」里输入上面的家庭码。之后谁给宝贝加分/兑换，全家实时同步。</p><div class="s-row"><button class="s-btn" onclick="pullCloud().then(()=>showToast('已同步最新积分 ✨'))">🔄 立即同步</button><button class="s-btn" style="color:var(--danger)" onclick="disconn()">断开连接</button></div>`;}}
+function shareLink(){if(!P||!P.fid)return;const link=location.origin+'/?f='+P.fid;const msg=`【${prof().name||'小英雄'}的上学积分】点开链接就能一起给宝贝加分啦～\n${link}\n（家庭码：${P.fid}）`;const done=()=>showToast('已复制！去微信粘贴发给家人 📋');if(navigator.share){navigator.share({title:'小英雄上学积分',text:msg,url:link}).then(()=>{}).catch(()=>copyText(msg,done));}else copyText(msg,done);}
+function copyText(t,cb){if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(t).then(cb).catch(()=>fallbackCopy(t,cb));else fallbackCopy(t,cb);}
+function fallbackCopy(t,cb){const ta=document.createElement('textarea');ta.value=t;ta.style.position='fixed';ta.style.opacity='0';document.body.appendChild(ta);ta.select();try{document.execCommand('copy');cb();}catch(e){showToast('请手动复制链接');}document.body.removeChild(ta);}
 function renderInstall(){const el=document.getElementById('installBody');if(!el)return;const standalone=window.matchMedia('(display-mode: standalone)').matches||window.navigator.standalone;if(standalone){el.innerHTML='<div style="font-size:13px;color:var(--sage-d)">✅ 已安装到桌面，正以 app 模式运行！</div>';return;}const isIOS=/iphone|ipad|ipod/i.test(navigator.userAgent);let h='';if(deferredPrompt){h+=`<button class="nxt" onclick="doInstall()">📲 一键安装到桌面</button>`;}if(isIOS){h+=`<div class="installtip">📱 iPhone/iPad：点底部 <b>分享按钮 ⬆️</b> → 选「<b>添加到主屏幕</b>」，桌面就会出现英雄图标。</div>`;}else if(!deferredPrompt){h+=`<div class="installtip">📱 安卓：点浏览器 <b>菜单 ⋮</b> → 选「<b>添加到主屏幕 / 安装应用</b>」。</div>`;}el.innerHTML=h;}
 function doInstall(){if(!deferredPrompt)return;deferredPrompt.prompt();deferredPrompt.userChoice.then(()=>{deferredPrompt=null;renderInstall();});}
 
 // ===== 家长设置（草稿 + 保存确认） =====
 function openDraft(){draft=clone(S.cfg);dirty=false;}
 function markDirty(){dirty=true;const b=document.getElementById('saveBtn');if(b){b.className='savebtn dirty';b.textContent='✓ 保存并同步给全家';}const h=document.getElementById('saveHint');if(h)h.textContent='有修改还没保存';}
-function saveSettings(){if(!dirty){showToast('没有需要保存的修改');return;}S.cfg=clone(draft);save();pushCloud();openDraft();renderAll();showToast('✅ 设置已保存并同步给全家');}
+function saveSettings(){if(!dirty){showToast('没有需要保存的修改');return;}const lp=S.cfg.profile;S.cfg=clone(draft);S.cfg.profile=lp;save();pushCloud();openDraft();renderAll();showToast('✅ 设置已保存并同步给全家');}
+function setTheme(k){if(!THEMES[k])return;if(!S.cfg.profile)S.cfg.profile={name:'小英雄',avId:'spider',e:'',theme:k};S.cfg.profile.theme=k;applyTheme();save();pushCloud();renderSettings();showToast('主题已切换 '+THEMES[k].name);}
 function sCheckin(v){draft.checkin=clampInt(v,0,999);markDirty();}
 function sRw(i,f,v){const r=draft.rewards[i];if(!r)return;if(f==='n')r.n=v.slice(0,20);else if(f==='c')r.c=clampInt(v,0,999);else if(f==='lv')r.lv=parseInt(v)||1;markDirty();}
 function sQa(i,f,v){const r=draft.qadd[i];if(!r)return;if(f==='i')r.i=(v||r.i).slice(0,2);else if(f==='label')r.label=v.slice(0,10);else if(f==='p')r.p=clampInt(v,1,99);else if(f==='attr')r.attr=v;markDirty();}
@@ -221,7 +242,10 @@ function sAttr(k,f,v){if(!draft.attrs)draft.attrs=clone(DEFAULT_ATTRS_META);cons
 function renderSettings(){const el=document.getElementById('settingsBody');if(!el)return;if(!draft)openDraft();
  const lvOpts=n=>RANKS.map(r=>`<option value="${r.lv}"${r.lv===n?' selected':''}>LV.${r.lv}</option>`).join('');
  el.innerHTML=
-  `<div class="set-row"><div class="set-ic">🏫</div><div style="flex:1;font-size:14px;color:var(--ink)">每天上学打卡奖励</div><input class="set-cost" type="number" min="0" max="999" value="${draft.checkin}" oninput="sCheckin(this.value)"></div>
+  `<div class="subhd" style="margin-top:0">🎨 主题风格</div>
+  <div class="subtip">选一个喜欢的主题，会同步给全家。</div>
+  <div class="preset-row">${Object.keys(THEMES).map(k=>`<span class="preset-chip${(((S.cfg.profile&&S.cfg.profile.theme)||'forest')===k)?' sel':''}" onclick="setTheme('${k}')">${THEMES[k].name}</span>`).join('')}</div>
+  <div class="set-row"><div class="set-ic">🏫</div><div style="flex:1;font-size:14px;color:var(--ink)">每天上学打卡奖励</div><input class="set-cost" type="number" min="0" max="999" value="${draft.checkin}" oninput="sCheckin(this.value)"></div>
   <div class="subhd">🎁 奖励兑换设置</div>
   <div class="set-hd"><span style="width:32px"></span><span style="flex:1">名称</span><span style="width:58px;text-align:center">花费⭐</span><span>解锁</span></div>
   ${draft.rewards.map((r,i)=>`<div class="set-row"><div class="set-ic" style="background:${r.h}">${r.i}</div><input class="set-name" value="${esc(r.n)}" oninput="sRw(${i},'n',this.value)"><input class="set-cost" type="number" min="0" max="999" value="${r.c}" oninput="sRw(${i},'c',this.value)"><select class="set-lv" onchange="sRw(${i},'lv',this.value)">${lvOpts(r.lv)}</select></div>`).join('')}
@@ -241,12 +265,12 @@ function renderSettings(){const el=document.getElementById('settingsBody');if(!e
   <div class="savebar"><button class="savebtn ${dirty?'dirty':'clean'}" id="saveBtn" onclick="saveSettings()">${dirty?'✓ 保存并同步给全家':'设置已保存 ✓'}</button><div class="savehint" id="saveHint">${dirty?'有修改还没保存':''}</div></div>
   <button class="s-btn" style="width:100%;margin-top:10px" onclick="resetCfg()">恢复默认设置</button>`;
 }
-function resetCfg(){showCC('<span style="font-size:40px">↩️</span>','恢复默认设置？','把打卡奖励、奖励列表、快捷加分/扣分都恢复成初始（不影响已有积分、能力和记录）。',()=>{S.cfg={checkin:10,rewards:cloneArr(DEFAULT_RWS),tasks:cloneArr(DEFAULT_TASKS),qadd:cloneArr(DEFAULT_QADD),qsub:cloneArr(DEFAULT_QSUB),attrs:clone(DEFAULT_ATTRS_META)};save();pushCloud();openDraft();renderAll();showToast('已恢复默认设置');});}
+function resetCfg(){showCC('<span style="font-size:40px">↩️</span>','恢复默认设置？','把打卡奖励、奖励列表、快捷加分/扣分都恢复成初始（不影响已有积分、能力和记录）。',()=>{const lp=S.cfg.profile;S.cfg={checkin:10,rewards:cloneArr(DEFAULT_RWS),tasks:cloneArr(DEFAULT_TASKS),qadd:cloneArr(DEFAULT_QADD),qsub:cloneArr(DEFAULT_QSUB),attrs:clone(DEFAULT_ATTRS_META),profile:lp};save();pushCloud();openDraft();renderAll();showToast('已恢复默认设置');});}
 
 // ===== 头像面板 =====
-function showAvPanel(){const p=document.getElementById('avPanel');p.style.display='';bindGrid('avPGrid',P.avId||'',av=>{P.avId=av.id;P.e='';P.g=av.g;save();renderHdr();});const prev=document.getElementById('avPPrev');if(prev)prev.innerHTML=avInner(44);}
+function showAvPanel(){const p=document.getElementById('avPanel');p.style.display='';bindGrid('avPGrid',prof().avId||'',av=>{const pr=prof();pr.avId=av.id;pr.e='';save();pushCloud();renderHdr();});const prev=document.getElementById('avPPrev');if(prev)prev.innerHTML=avInner(44);}
 function closeAvPanel(){document.getElementById('avPanel').style.display='none';}
-function applyCustomAv(){const v=document.getElementById('avCIn').value.trim();if(!v){showToast('请输入一个表情符号');return;}P.e=v;P.avId='';save();renderHdr();closeAvPanel();showToast('形象已更新！✨');}
+function applyCustomAv(){const v=document.getElementById('avCIn').value.trim();if(!v){showToast('请输入一个表情符号');return;}const pr=prof();pr.e=v;pr.avId='';save();pushCloud();renderHdr();closeAvPanel();showToast('形象已更新！✨');}
 
 // ===== 核心动作 =====
 function td(){const d=new Date();return d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate();}
@@ -315,4 +339,17 @@ function goTab(n,btn){document.querySelectorAll('.sec').forEach(s=>s.classList.r
 window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredPrompt=e;renderInstall();});
 window.addEventListener('focus',()=>{if(P&&P.fid)pullCloud();});
 
-if(P)showMain();else initSetup();
+const pendingJoin=((new URLSearchParams(location.search)).get('f')||'').toUpperCase()||null;
+(async function boot(){
+ if(pendingJoin){
+   // 通过分享链接进入：直接加入该家庭积分本
+   if(!P)P={fid:null};
+   if(P.fid!==pendingJoin){
+     P.fid=pendingJoin;save();
+     const ok=await joinBlob(pendingJoin);
+     if(ok && S.cfg && S.cfg.profile){showMain();return;}
+     if(!ok){P.fid=null;save();}
+   }
+ }
+ if(S.cfg && S.cfg.profile)showMain();else initSetup();
+})();
