@@ -332,6 +332,8 @@ body{font-family:var(--font-sans);color:var(--ink);padding:env(safe-area-inset-t
     <div class="av-panel ink2" id="avPanel" style="display:none">
       <div class="ch">选择你的英雄形象</div>
       <div class="av-grid" id="avPGrid"></div>
+      <button class="nxt" style="margin-bottom:10px" onclick="document.getElementById('avFile').click()">📷 上传宝贝照片做头像</button>
+      <input type="file" id="avFile" accept="image/*" style="display:none" onchange="onAvFile(this)">
       <div class="cust-row">
         <div class="cust-prev" id="avPPrev"></div>
         <input class="ai" style="flex:1;font-size:18px" placeholder="或输入喜欢的表情 🦸" id="avCIn" maxlength="2" />
