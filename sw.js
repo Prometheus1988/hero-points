@@ -1,8 +1,9 @@
-const CACHE = 'hero-points-v8';
+const CACHE = 'hero-points-v9';
 const ASSETS = [
   './',
   './index.html',
   './app.js',
+  './qrcode.min.js',
   './manifest.json',
   './icons/icon-192.png',
   './icons/icon-512.png'
