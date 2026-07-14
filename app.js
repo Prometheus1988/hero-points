@@ -23,8 +23,26 @@ bunny:`<ellipse cx="36" cy="16" rx="8" ry="16" fill="#fff" stroke="#15151f" stro
 panda:`<circle cx="26" cy="20" r="11" fill="#2f2f2f"/><circle cx="74" cy="20" r="11" fill="#2f2f2f"/><circle cx="50" cy="54" r="37" fill="#fff" stroke="#15151f" stroke-width="3"/><ellipse cx="37" cy="49" rx="10" ry="12" fill="#2f2f2f"/><ellipse cx="63" cy="49" rx="10" ry="12" fill="#2f2f2f"/><circle cx="38" cy="49" r="4.5" fill="#fff"/><circle cx="62" cy="49" r="4.5" fill="#fff"/><circle cx="39" cy="50" r="2.2" fill="#15151f"/><circle cx="63" cy="50" r="2.2" fill="#15151f"/><ellipse cx="50" cy="64" rx="6" ry="4.5" fill="#2f2f2f"/><path d="M43 72 Q50 77 57 72" stroke="#2f2f2f" stroke-width="2.5" fill="none" stroke-linecap="round"/>`,
 star:`<path d="M50 6 L61 36 L94 38 L68 58 L77 90 L50 71 L23 90 L32 58 L6 38 L39 36 Z" fill="#ffd23f" stroke="#15151f" stroke-width="3" stroke-linejoin="round"/><circle cx="42" cy="48" r="5" fill="#15151f"/><circle cx="58" cy="48" r="5" fill="#15151f"/><circle cx="43.5" cy="46.5" r="1.6" fill="#fff"/><circle cx="59.5" cy="46.5" r="1.6" fill="#fff"/><path d="M42 58 Q50 65 58 58" stroke="#15151f" stroke-width="3" fill="none" stroke-linecap="round"/><circle cx="33" cy="55" r="4.5" fill="#f2a854" opacity=".7"/><circle cx="67" cy="55" r="4.5" fill="#f2a854" opacity=".7"/>`
 };
-const AV_LABELS={lion:'小狮王',dino:'小恐龙',astro:'小宇航员',elsa:'冰雪公主',snowman:'小雪人',fox:'狐狸警官',rabbit:'兔子警官',whale:'小鲸鱼',octopus:'小章鱼',bunny:'樱花兔',panda:'小熊猫',star:'小星星'};
-const THEME_AVS={forest:['lion','dino'],frozen:['elsa','snowman'],zootopia:['fox','rabbit'],ocean:['whale','octopus'],sakura:['bunny','panda'],night:['astro','star']};
+// 补充角色
+Object.assign(CHARS,{
+anna:`<circle cx="50" cy="50" r="40" fill="#c77ba8" stroke="#15151f" stroke-width="3"/><circle cx="50" cy="54" r="26" fill="#ffe8d8"/><path d="M27 46 Q32 26 50 26 Q68 26 73 46 Q60 34 50 37 Q40 34 27 46Z" fill="#b5651d" stroke="#15151f" stroke-width="2"/><ellipse cx="26" cy="58" rx="6" ry="14" fill="#b5651d" stroke="#15151f" stroke-width="2"/><ellipse cx="74" cy="58" rx="6" ry="14" fill="#b5651d" stroke="#15151f" stroke-width="2"/>${EY}<circle cx="41" cy="60" r="1.4" fill="#c9906a"/><circle cx="46" cy="62" r="1.4" fill="#c9906a"/><circle cx="59" cy="60" r="1.4" fill="#c9906a"/>${SM}${CK}`,
+sven:`<path d="M22 20 q-12 -14 -4 -18 q3 6 10 6 q-2 -8 6 -6 q4 8 -2 18Z" fill="#8a6242" stroke="#15151f" stroke-width="2"/><path d="M78 20 q12 -14 4 -18 q-3 6 -10 6 q2 -8 -6 -6 q-4 8 2 18Z" fill="#8a6242" stroke="#15151f" stroke-width="2"/><circle cx="50" cy="55" r="37" fill="#a9744f" stroke="#15151f" stroke-width="3"/><ellipse cx="50" cy="68" rx="19" ry="14" fill="#c9a27c"/>${EY}<ellipse cx="50" cy="65" rx="8" ry="6" fill="#5a3a24"/><path d="M42 74 Q50 79 58 74" stroke="#5a3a24" stroke-width="2.5" fill="none" stroke-linecap="round"/>`,
+penguin:`<circle cx="50" cy="52" r="39" fill="#2f3542" stroke="#15151f" stroke-width="3"/><ellipse cx="50" cy="58" rx="27" ry="28" fill="#fff"/>${EY}<path d="M44 58 L56 58 L50 67Z" fill="#f2a33c" stroke="#15151f" stroke-width="2"/>${CK}<path d="M8 60 q8 12 16 8 M92 60 q-8 12 -16 8" stroke="#15151f" stroke-width="2.5" fill="#2f3542"/>`,
+sloth:`<circle cx="50" cy="52" r="39" fill="#cbb69b" stroke="#15151f" stroke-width="3"/><ellipse cx="50" cy="60" rx="24" ry="20" fill="#e8dcc8"/><ellipse cx="37" cy="48" rx="9" ry="13" fill="#8a6f52" transform="rotate(-18 37 48)"/><ellipse cx="63" cy="48" rx="9" ry="13" fill="#8a6f52" transform="rotate(18 63 48)"/><circle cx="38" cy="50" r="4.5" fill="#15151f"/><circle cx="62" cy="50" r="4.5" fill="#15151f"/><circle cx="39.5" cy="48.5" r="1.5" fill="#fff"/><circle cx="63.5" cy="48.5" r="1.5" fill="#fff"/><ellipse cx="50" cy="63" rx="4.5" ry="3.5" fill="#5a4a38"/><path d="M43 70 Q50 76 57 70" stroke="#5a4a38" stroke-width="2.5" fill="none" stroke-linecap="round"/>`,
+tiger:`<path d="M22 32 L33 13 L41 35Z" fill="#f3722c" stroke="#15151f" stroke-width="2.5"/><path d="M78 32 L67 13 L59 35Z" fill="#f3722c" stroke="#15151f" stroke-width="2.5"/><circle cx="50" cy="55" r="37" fill="#f4a259" stroke="#15151f" stroke-width="3"/><g stroke="#7a4a1e" stroke-width="3.5" stroke-linecap="round"><path d="M50 22 v9"/><path d="M39 24 l-3 8"/><path d="M61 24 l3 8"/><path d="M19 52 h9"/><path d="M72 52 h9"/></g>${EY}<ellipse cx="50" cy="66" rx="15" ry="11" fill="#fff3e0"/><path d="M45 62 h10 l-5 5z" fill="#d1495b"/><path d="M50 67 Q44 73 40 69 M50 67 Q56 73 60 69" stroke="#7a4a1e" stroke-width="2.5" fill="none" stroke-linecap="round"/>${CK}`,
+chase:`<ellipse cx="20" cy="50" rx="9" ry="17" fill="#7a5230" stroke="#15151f" stroke-width="2.5"/><ellipse cx="80" cy="50" rx="9" ry="17" fill="#7a5230" stroke="#15151f" stroke-width="2.5"/><circle cx="50" cy="54" r="36" fill="#b58a5c" stroke="#15151f" stroke-width="3"/><path d="M16 40 Q50 8 84 40 Q66 32 50 32 Q34 32 16 40Z" fill="#2f6bb0" stroke="#15151f" stroke-width="2.5"/><rect x="40" y="16" width="20" height="7" rx="3" fill="#ffd23f" stroke="#15151f" stroke-width="1.5"/>${EY}<ellipse cx="50" cy="68" rx="16" ry="12" fill="#e8d4b8"/><ellipse cx="50" cy="63" rx="5.5" ry="4.5" fill="#3a2b20"/><path d="M43 73 Q50 78 57 73" stroke="#3a2b20" stroke-width="2.5" fill="none" stroke-linecap="round"/>`,
+marshall:`<ellipse cx="20" cy="50" rx="9" ry="17" fill="#2f2f2f" stroke="#15151f" stroke-width="2.5"/><ellipse cx="80" cy="50" rx="9" ry="17" fill="#fff" stroke="#15151f" stroke-width="2.5"/><circle cx="50" cy="54" r="36" fill="#fff" stroke="#15151f" stroke-width="3"/><circle cx="32" cy="44" r="4" fill="#2f2f2f"/><circle cx="68" cy="48" r="3.4" fill="#2f2f2f"/><circle cx="62" cy="38" r="2.6" fill="#2f2f2f"/><path d="M16 40 Q50 8 84 40 Q66 32 50 32 Q34 32 16 40Z" fill="#e0393f" stroke="#15151f" stroke-width="2.5"/><rect x="43" y="14" width="14" height="10" rx="3" fill="#ffe14d" stroke="#15151f" stroke-width="1.5"/>${EY}<ellipse cx="50" cy="68" rx="16" ry="12" fill="#f6ece0"/><ellipse cx="50" cy="63" rx="5.5" ry="4.5" fill="#3a2b20"/><path d="M43 73 Q50 78 57 73" stroke="#3a2b20" stroke-width="2.5" fill="none" stroke-linecap="round"/>${CK}`,
+skye:`<ellipse cx="20" cy="52" rx="9" ry="16" fill="#d9a878" stroke="#15151f" stroke-width="2.5"/><ellipse cx="80" cy="52" rx="9" ry="16" fill="#d9a878" stroke="#15151f" stroke-width="2.5"/><circle cx="50" cy="54" r="36" fill="#e8c39a" stroke="#15151f" stroke-width="3"/><path d="M16 40 Q50 8 84 40 Q66 32 50 32 Q34 32 16 40Z" fill="#e56a9a" stroke="#15151f" stroke-width="2.5"/><circle cx="40" cy="24" r="6.5" fill="#cdeaff" stroke="#15151f" stroke-width="2"/><circle cx="60" cy="24" r="6.5" fill="#cdeaff" stroke="#15151f" stroke-width="2"/><path d="M46.5 24 h7" stroke="#15151f" stroke-width="2"/>${EY}<ellipse cx="50" cy="68" rx="15" ry="11" fill="#f8e8d4"/><ellipse cx="50" cy="63" rx="5" ry="4" fill="#3a2b20"/><path d="M43 72 Q50 77 57 72" stroke="#3a2b20" stroke-width="2.5" fill="none" stroke-linecap="round"/>${CK}`,
+rubble:`<ellipse cx="22" cy="46" rx="9" ry="14" fill="#b07f42" stroke="#15151f" stroke-width="2.5"/><ellipse cx="78" cy="46" rx="9" ry="14" fill="#b07f42" stroke="#15151f" stroke-width="2.5"/><circle cx="50" cy="55" r="37" fill="#d9a05c" stroke="#15151f" stroke-width="3"/><path d="M15 41 Q50 6 85 41 Q66 32 50 32 Q34 32 15 41Z" fill="#ffd23f" stroke="#15151f" stroke-width="2.5"/><path d="M20 40 Q50 30 80 40 L80 45 Q50 36 20 45Z" fill="#e8b52e" stroke="#15151f" stroke-width="1.5"/>${EY}<ellipse cx="50" cy="69" rx="17" ry="12" fill="#f2dfc2"/><ellipse cx="50" cy="64" rx="6" ry="4.5" fill="#3a2b20"/><path d="M42 74 Q50 79 58 74" stroke="#3a2b20" stroke-width="2.5" fill="none" stroke-linecap="round"/>`,
+zuma:`<ellipse cx="20" cy="50" rx="9" ry="17" fill="#5a3a24" stroke="#15151f" stroke-width="2.5"/><ellipse cx="80" cy="50" rx="9" ry="17" fill="#5a3a24" stroke="#15151f" stroke-width="2.5"/><circle cx="50" cy="54" r="36" fill="#8a5a3a" stroke="#15151f" stroke-width="3"/><path d="M16 40 Q50 8 84 40 Q66 32 50 32 Q34 32 16 40Z" fill="#f2913d" stroke="#15151f" stroke-width="2.5"/><path d="M40 18 a10 10 0 0 1 20 0" fill="none" stroke="#15151f" stroke-width="2"/>${EY}<ellipse cx="50" cy="68" rx="16" ry="12" fill="#c99c72"/><ellipse cx="50" cy="63" rx="5.5" ry="4.5" fill="#3a2b20"/><path d="M43 73 Q50 78 57 73" stroke="#3a2b20" stroke-width="2.5" fill="none" stroke-linecap="round"/>`
+});
+const AV_LABELS={spider:'蜘蛛侠',bat:'蝙蝠侠',iron:'钢铁侠',ultra:'奥特曼',captain:'美队',hulk:'绿巨人',flash:'闪电侠',lion:'狮子市长',dino:'小恐龙',astro:'小宇航员',elsa:'冰雪公主',anna:'阳光公主',snowman:'小雪人',sven:'小驯鹿',penguin:'小企鹅',fox:'狐狸尼克',rabbit:'兔子朱迪',sloth:'树懒闪电',tiger:'小老虎',whale:'小鲸鱼',octopus:'小章鱼',bunny:'樱花兔',panda:'小熊猫',star:'小星星',chase:'警犬阿奇',marshall:'消防毛毛',skye:'飞行天天',rubble:'工程小砾',zuma:'水上路马'};
+const THEME_AVS={
+ frozen:['elsa','anna','snowman','sven','penguin'],
+ zootopia:['fox','rabbit','sloth','lion','tiger'],
+ pawpatrol:['chase','marshall','skye','rubble','zuma'],
+ hero:['spider','bat','iron','ultra','captain','hulk','flash'],
+};
 
 const AVS=[
  {id:'spider',l:'蜘蛛侠',g:['#ff5b6e','#c1121f']},
@@ -36,7 +54,7 @@ const AVS=[
  {id:'flash',l:'闪电侠',g:['#ff5b6e','#b3122a']},
 ];
 function charSvg(id,sz){return CHARS[id]?`<svg width="${sz}" height="${sz}" viewBox="0 0 100 100">${CHARS[id]}</svg>`:'';}
-function avList(){const th=(typeof S!=='undefined'&&S.cfg&&S.cfg.profile&&S.cfg.profile.theme)||'forest';const ex=(THEME_AVS[th]||[]).map(id=>({id,l:AV_LABELS[id]||id,g:['#54c6b6','#43ab9e'],themed:true}));return ex.concat(AVS);}
+function avList(){const th=(typeof S!=='undefined'&&S.cfg&&S.cfg.profile&&S.cfg.profile.theme)||'hero';const main=(THEME_AVS[th]||THEME_AVS.hero).map(id=>({id,l:AV_LABELS[id]||id,themed:true}));const used=new Set(main.map(x=>x.id));const rest=Object.keys(CHARS).filter(id=>!used.has(id)).map(id=>({id,l:AV_LABELS[id]||id}));return main.concat(rest);}
 
 const RANKS=[
  {lv:1,name:'见习英雄',need:0},
@@ -119,12 +137,10 @@ const QSUB_PRESETS={
 };
 const API='/api/family';
 const THEMES={
- forest:{name:'🌿 森林绿',hero:'linear-gradient(160deg,#54c6b6 0%,#78cc9f 58%,#95d489 100%)',teal:'#3fb3a6',tealD:'#2f958a',acc:'linear-gradient(180deg,#5cc4b6,#43ab9e)',go:'linear-gradient(180deg,#98c67f,#75ac5f)',bg:'#f3f0e4',gold:'#d0ac54'},
  frozen:{name:'❄️ 冰雪世界',hero:'linear-gradient(160deg,#8ed3f0 0%,#a7c2ee 55%,#c7b6e6 100%)',teal:'#5aa6d6',tealD:'#3f83b8',acc:'linear-gradient(180deg,#79bce8,#5497cc)',go:'linear-gradient(180deg,#8fc6e8,#5f9fd0)',bg:'#eef3f8',gold:'#8fa8cc'},
  zootopia:{name:'🦊 动物城',hero:'linear-gradient(160deg,#ffb45e 0%,#ff9f72 52%,#ffd670 100%)',teal:'#e08a3c',tealD:'#bd6c1f',acc:'linear-gradient(180deg,#f2a854,#dd8830)',go:'linear-gradient(180deg,#f2b866,#e09640)',bg:'#f8f1e2',gold:'#d99a3e'},
- ocean:{name:'🌊 海洋蓝',hero:'linear-gradient(160deg,#3fb4cc 0%,#4aa6d8 55%,#74c8cf 100%)',teal:'#2f95b2',tealD:'#217a93',acc:'linear-gradient(180deg,#4cb0d4,#3390b4)',go:'linear-gradient(180deg,#5fbcd0,#3c9cb8)',bg:'#eaf3f5',gold:'#4ba3b8'},
- sakura:{name:'🌸 樱花粉',hero:'linear-gradient(160deg,#f7a6c2 0%,#f4b7cf 52%,#f8c9ad 100%)',teal:'#e06e95',tealD:'#c25276',acc:'linear-gradient(180deg,#ef94b4,#d97298)',go:'linear-gradient(180deg,#f2a4be,#dd7fa2)',bg:'#f9f0f2',gold:'#d98aa4'},
- night:{name:'✨ 星空紫',hero:'linear-gradient(160deg,#7a6bc8 0%,#8f7bd0 55%,#a98fd8 100%)',teal:'#7869bf',tealD:'#5d4ea8',acc:'linear-gradient(180deg,#8f7ecf,#6f5cb8)',go:'linear-gradient(180deg,#a08fd8,#7d68c4)',bg:'#f0eef6',gold:'#9a86c8'},
+ pawpatrol:{name:'🐾 汪汪队',hero:'linear-gradient(160deg,#5aa9e6 0%,#7fc8f8 52%,#ffd166 100%)',teal:'#4a9ede',tealD:'#3480c0',acc:'linear-gradient(180deg,#5cb0e8,#3a8fd0)',go:'linear-gradient(180deg,#f2c94c,#e0a92e)',bg:'#eef4f9',gold:'#e0a92e'},
+ hero:{name:'🦸 超级英雄',hero:'linear-gradient(160deg,#ff8a70 0%,#e6607a 55%,#b45ac0 100%)',teal:'#e05a6a',tealD:'#c04252',acc:'linear-gradient(180deg,#ef7080,#d84f60)',go:'linear-gradient(180deg,#f2a854,#dd8830)',bg:'#f9efec',gold:'#d0854e'},
 };
 
 const clone=o=>JSON.parse(JSON.stringify(o));
@@ -157,8 +173,8 @@ function ensureCfg(){
  if(S.abilities.heart!==undefined){S.abilities.social=(S.abilities.social||0)+S.abilities.heart;delete S.abilities.heart;}
  ATTR_ORDER.forEach(k=>{if(typeof S.abilities[k]!=='number')S.abilities[k]=0;});
  // 旧版把名字/头像存在 P 里，迁移到共享档案 S.cfg.profile，方便家人加入后自动同步
- if(!S.cfg.profile && typeof P==='object' && P && (P.name||P.avId))S.cfg.profile={name:P.name||'小英雄',avId:P.avId||'',e:P.e||'',theme:'forest'};
- if(S.cfg.profile && !S.cfg.profile.theme)S.cfg.profile.theme='forest';
+ if(!S.cfg.profile && typeof P==='object' && P && (P.name||P.avId))S.cfg.profile={name:P.name||'小英雄',avId:P.avId||'',e:P.e||'',theme:'hero'};
+ if(S.cfg.profile && (!S.cfg.profile.theme || !THEMES[S.cfg.profile.theme]))S.cfg.profile.theme='hero';
  (S.hist||[]).forEach(h=>{if(h.attr==='body')h.attr='fitness';else if(h.attr==='heart')h.attr='social';});
  [S.cfg.tasks,S.cfg.qadd].forEach(arr=>arr&&arr.forEach(x=>{if(x.attr==='body')x.attr='fitness';else if(x.attr==='heart')x.attr='social';}));
 }
@@ -183,7 +199,7 @@ async function pullCloud(){if(!P||!P.fid)return;
 async function pullQuiet(){if(!P||!P.fid)return;try{const r=await fetch(`${API}/${P.fid}`);if(r.ok){const d=await r.json();if(d&&d.S){S=d.S;if(S.lifetime===undefined)S.lifetime=S.points||0;ensureCfg();}}}catch(e){}}
 async function createBlob(){try{const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({S,v:1})});if(!r.ok)return null;const d=await r.json();return d.id||null;}catch(e){return null;}}
 async function joinBlob(id){try{const r=await fetch(`${API}/${id}`);if(!r.ok)return false;const d=await r.json();if(d&&d.S){S=d.S;if(S.lifetime===undefined)S.lifetime=S.points||0;ensureCfg();draft=null;save();applyTheme();}return true;}catch(e){return false;}}
-function applyTheme(){const key=(S.cfg&&S.cfg.profile&&S.cfg.profile.theme)||'forest';const t=THEMES[key]||THEMES.forest;const r=document.documentElement.style;r.setProperty('--hero-grad',t.hero);r.setProperty('--teal',t.teal);r.setProperty('--teal-d',t.tealD);r.setProperty('--accent-grad',t.acc);r.setProperty('--go-grad',t.go);r.setProperty('--bg',t.bg);r.setProperty('--gold',t.gold);}
+function applyTheme(){const key=(S.cfg&&S.cfg.profile&&S.cfg.profile.theme)||'hero';const t=THEMES[key]||THEMES.hero;const r=document.documentElement.style;r.setProperty('--hero-grad',t.hero);r.setProperty('--teal',t.teal);r.setProperty('--teal-d',t.tealD);r.setProperty('--accent-grad',t.acc);r.setProperty('--go-grad',t.go);r.setProperty('--bg',t.bg);r.setProperty('--gold',t.gold);}
 function setSS(s){const dot=document.getElementById('sdi'),txt=document.getElementById('stxt');if(!dot)return;dot.className='sdi'+(s==='ok'?' ok':s==='err'?' err':s==='loading'?' spin':'');txt.textContent=s==='ok'?'已同步':s==='err'?'同步失败':s==='loading'?'同步中':'';}
 function startAuto(){if(autoT)clearInterval(autoT);if(P&&P.fid)autoT=setInterval(pullCloud,8000);}
 
@@ -198,7 +214,7 @@ function toggleJoin(){const a=document.getElementById('jArea');if(a)a.style.disp
 async function doCreate(){buildP();save();showToast('正在创建...');const id=await createBlob();if(id){P.fid=id;save();showMain();showToast('🎉 创建成功！家庭码在家长里');}else{showMain();showToast('❌ '+apiUnavailableMsg()+'（已先用本地模式）');}}
 async function doJoin(){const inp=document.getElementById('jIn');if(!inp||!inp.value.trim()){showToast('请输入家庭码');return;}buildP();const ok=await joinBlob(inp.value.trim());if(ok){P.fid=inp.value.trim();save();showMain();}else showToast('加入失败，请检查家庭码');}
 function finish(){buildP();save();showMain();}
-function buildP(){ensureCfg();const keepTheme=(S.cfg.profile&&S.cfg.profile.theme)||'forest';S.cfg.profile={name:sName.trim()||'小英雄',avId:(sCust||!CHARS[sAv])?'':sAv,e:sCust,theme:keepTheme};if(!P)P={fid:null};if(P.fid===undefined)P.fid=null;save();}
+function buildP(){ensureCfg();const keepTheme=(S.cfg.profile&&S.cfg.profile.theme)||'hero';S.cfg.profile={name:sName.trim()||'小英雄',avId:(sCust||!CHARS[sAv])?'':sAv,e:sCust,theme:keepTheme};if(!P)P={fid:null};if(P.fid===undefined)P.fid=null;save();}
 function bindGrid(id,sel,cb){const g=document.getElementById(id);if(!g)return;const LIST=avList();g.innerHTML=LIST.map((av,i)=>`<div class="av-opt${av.id===sel?' sel':''}${av.themed?' themed':''}" data-i="${i}">${charSvg(av.id,46)}<span class="av-lbl">${av.themed?'⭐':''}${av.l}</span></div>`).join('');g.querySelectorAll('.av-opt').forEach(el=>el.addEventListener('click',()=>{g.querySelectorAll('.av-opt').forEach(e=>e.classList.remove('sel'));el.classList.add('sel');cb(LIST[el.dataset.i]);}));}
 
 function showMain(){applyTheme();document.getElementById('SW').style.display='none';document.getElementById('MW').style.display='';renderAll();startAuto();setupObserver();if(P&&P.fid)pullCloud();}
@@ -207,7 +223,7 @@ function updateMiniBar(){const hdr=document.getElementById('hdr'),mb=document.ge
 function setupObserver(){updateMiniBar();if(obsBound)return;obsBound=true;window.addEventListener('scroll',updateMiniBar,{passive:true});window.addEventListener('resize',updateMiniBar,{passive:true});}
 
 // ===== 渲染 =====
-function prof(){return (S.cfg&&S.cfg.profile)||{name:'小英雄',avId:'spider',e:'',theme:'forest'};}
+function prof(){return (S.cfg&&S.cfg.profile)||{name:'小英雄',avId:'spider',e:'',theme:'hero'};}
 function avInner(sz){const pr=prof();return (pr.avId&&CHARS[pr.avId])?charSvg(pr.avId,sz):`<span style="font-size:${Math.round(sz*0.55)}px">${esc(pr.e)||'🦸'}</span>`;}
 function renderAll(){renderHdr();renderCi();renderTasks();renderAbilities();renderRw();renderHist();renderQuick();renderSync();renderInstall();renderSettings();}
 function renderHdr(){const hdr=document.getElementById('hdr');if(!hdr)return;const rk=rankOf(S.lifetime);const av=document.getElementById('hav');av.innerHTML=avInner(80);av.style.boxShadow=`0 6px 16px rgba(0,0,0,.15),0 0 ${6+rk.lv*4}px rgba(255,240,190,${.15+rk.lv*.06})`;document.getElementById('hnm').textContent=(prof().name||'小英雄');document.getElementById('hpts').textContent=S.points;
@@ -268,7 +284,7 @@ function renderSettings(){const el=document.getElementById('settingsBody');if(!e
  el.innerHTML=
   `<div class="subhd" style="margin-top:0">🎨 主题风格</div>
   <div class="subtip">选一个喜欢的主题，会同步给全家。</div>
-  <div class="preset-row">${Object.keys(THEMES).map(k=>`<span class="preset-chip${(((S.cfg.profile&&S.cfg.profile.theme)||'forest')===k)?' sel':''}" onclick="setTheme('${k}')">${THEMES[k].name}</span>`).join('')}</div>
+  <div class="preset-row">${Object.keys(THEMES).map(k=>`<span class="preset-chip${(((S.cfg.profile&&S.cfg.profile.theme)||'hero')===k)?' sel':''}" onclick="setTheme('${k}')">${THEMES[k].name}</span>`).join('')}</div>
   <div class="set-row"><div class="set-ic">🏫</div><div style="flex:1;font-size:14px;color:var(--ink)">每天上学打卡奖励</div><input class="set-cost" type="number" min="0" max="999" value="${draft.checkin}" oninput="sCheckin(this.value)"></div>
   <div class="subhd">🎁 奖励兑换设置</div>
   <div class="set-hd"><span style="width:32px"></span><span style="flex:1">名称</span><span style="width:58px;text-align:center">花费⭐</span><span>解锁</span></div>
